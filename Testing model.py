@@ -7,6 +7,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import datetime
 import importlib
 
@@ -48,8 +49,6 @@ def calc_statistic(state):
     Требуемая от симуляции статистика
     """
     data = pd.Series({
-        #'busy_lines': get_n_busy_lines(state.lines_time_to_free),
-        #'missed_clients_regular':state.n_missed_clients['regular']
         },
         name=state.time_cur)
     return data
@@ -70,6 +69,8 @@ def get_panel(system, state):
               left_on='client_id', right_on='id', suffixes=['_con','_client'], how='right').drop('id_client',axis=1)
     ds = pd.merge(ds, system.operators_ds,
                   left_on='operator_id', right_on='id', suffixes=['','_operator'], how='left').drop('id',axis=1)
+    ds = pd.merge(ds, state.queue_ds,
+                  left_on='client_id', right_on='client_id', suffixes=['','_queue'], how='left')
     ds = ds.rename(columns={'id_con':'id_connection', 'operator_id':'id_operator', 'client_id':'id_client','line_id':'id_line',
                             'closed':'connection_closed',
                             'type':'type_client', 'opeartor_type':'type_operator',
@@ -77,8 +78,13 @@ def get_panel(system, state):
                             'call_start_time':'time_start_call',
                             'max_waiting_time':'client_max_waiting_time',
                             'missed':'client_missed',
-                            'start_work_time':'operator_start_work_time'
+                            'start_work_time':'operator_start_work_time',
+                            'priority':'client_priority',
+                            'time_from':'time_quque_from',
+                            'exit':'queue_exit'
                            })
+    ds['hour'] = [x.hour for x in ds['time_start_call']]
+    ds['client_missed'] = ds['client_missed'].astype(int)
     return ds
 
 
@@ -115,10 +121,6 @@ calls_stat_ds
 
 operators_ds = pd.DataFrame(columns=['id', 'type', 'start_work_time'])
 
-
-# In[11]:
-
-
 add_operators([['regular', get_datetime(7,0)],
                ['regular', get_datetime(11,0)],
                ['silver',  get_datetime(7,0)],
@@ -126,15 +128,9 @@ add_operators([['regular', get_datetime(7,0)],
              operators_ds)
 
 
-# In[12]:
-
-
-operators_ds
-
-
 # # Модель 1
 
-# In[13]:
+# In[11]:
 
 
 def init_state(system):
@@ -150,13 +146,13 @@ def init_state(system):
         # Данные по всем соединениям операторов с клиентами
         connections_ds=pd.DataFrame(columns=['id', 'operator_id', 'client_id', 'line_id', 'time_start','time_to_service', 'closed']),
         # Очередь клиентов на соединение
-        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from']  # 
+        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from', 'exit']  # 
         )
     )
     return state
 
 
-# In[14]:
+# In[12]:
 
 
 def generate_clients(system, state):
@@ -179,7 +175,7 @@ def generate_clients(system, state):
     return ids
 
 
-# In[15]:
+# In[13]:
 
 
 def add_clients_to_queue(state, clients_ids):
@@ -189,28 +185,29 @@ def add_clients_to_queue(state, clients_ids):
     for cid in clients_ids:
         data = {'client_id':cid,
                 'priority': type_priority_mapping[state.clients_ds.loc[cid,'type']],
-                'time_from':state.time_cur}
+                'time_from':state.time_cur,
+                'exit':False}
         state.queue_ds = state.queue_ds.append(data, ignore_index=True)
 
 
-# In[16]:
+# In[14]:
 
 
 def drop_clients_from_queue(state):
     """
     Моделирование "бросания трубки" недождавшихся клиентов
     """
-    cds = pd.merge(state.queue_ds, state.clients_ds, left_on='client_id',right_on='id')
+    cds = pd.merge(state.queue_ds, state.clients_ds, left_on='client_id',right_on='id', how='right')
     
     missed_cids = cds.loc[([x.seconds for x in state.time_cur-cds['time_from']]>cds['max_waiting_time']), 'client_id']
     if len(missed_cids)>0:
         # Убираем клиента из очереди
-        state.queue_ds = state.queue_ds.loc[[not x for x in state.queue_ds['client_id'].isin(missed_cids)]]
+        state.queue_ds.loc[state.queue_ds['client_id'].isin(missed_cids), 'exit'] = True
         # Запись, что клиент бросил трубку
-        state.clients_ds.loc[missed_cids, 'missed'] = True
+        state.clients_ds.loc[state.clients_ds['id'].isin(missed_cids), 'missed'] = True
 
 
-# In[17]:
+# In[15]:
 
 
 def occupy_operators(system, state):
@@ -218,20 +215,22 @@ def occupy_operators(system, state):
     Поиск свободных операторов, линий и клиентов в очереди. Установка соединений
     """
     connections_open = state.connections_ds[state.connections_ds['closed']==False]
-    free_operators = system.operators_ds.loc[[not x for x in system.operators_ds['id'].isin(connections_open['operator_id'])]]
+    free_operators = system.operators_ds.loc[-system.operators_ds['id'].isin(connections_open['operator_id'])]
     free_operators = free_operators[(free_operators['start_work_time']<state.time_cur)&
                                     (state.time_cur<free_operators['start_work_time']+system.operators_work_duration)]
+    free_operators
     free_lines = [x for x in range(system.n_lines) if x not in connections_open['line_id']]
     
     for idx, op_row in free_operators.iterrows():
         if len(free_lines) == 0:
             break
         cds = state.queue_ds
+        cds = cds[cds['exit']==False]
         cds = cds[cds['priority']>=type_priority_mapping[op_row['type']]]
         if len(cds)==0:
             continue
         cds = cds.sort_values(['priority','time_from'], ascending=[True, True])
-        cclient, state.queue_ds = cds.iloc[0], cds.iloc[1:]
+        cclient = cds.iloc[0]
         cline, free_lines = free_lines[0], free_lines[1:]
         data = {
             'id': len(state.connections_ds),
@@ -246,7 +245,7 @@ def occupy_operators(system, state):
     return free_operators
 
 
-# In[18]:
+# In[16]:
 
 
 def release_operators(system, state):
@@ -259,7 +258,7 @@ def release_operators(system, state):
     return ended_connections
 
 
-# In[19]:
+# In[17]:
 
 
 def step(system, state):        
@@ -275,7 +274,7 @@ def step(system, state):
     drop_clients_from_queue(state)
 
 
-# In[20]:
+# In[18]:
 
 
 def run_simulation(system):
@@ -290,52 +289,50 @@ def run_simulation(system):
     tqdm = tqdm_notebook(total=(system.time_end-system.time_start).seconds//system.timedelta.seconds)
     while state.time_cur<system.time_end:
         step(system, state)
-        #results_frame = results_frame.append(calc_statistic(state))
+        results_frame = results_frame.append(calc_statistic(state))
         to_next_timestep(system, state, tqdm)
     tqdm.close()
 
     return results_frame, state
 
 
-# In[21]:
+# In[19]:
 
 
 system = msp.System(time_start=get_datetime(7,0),
                 #time_end=get_datetime(19,0),
-                time_end=get_datetime(9,0),
+                time_end=get_datetime(8,0),
                 timedelta = datetime.timedelta(seconds=1),
                 n_lines = 50,  # кол-во линий связи
                 calls_stat=calls_stat_ds,  # частоты звонков
                 time_to_serve=120,  # seconds # временная константа. время обслуживания каждого клиента
                 client_types = ['regular', 'silver', 'gold'],  # типы клиентов. затем добавятся silver и gold
                 operators_ds=operators_ds,
-                operators_work_duration = datetime.timedelta(hours=8)
+                operators_work_duration = datetime.timedelta(hours=8),
+                n_lines_vip = 5
                 )
 
 
-# In[22]:
+# In[20]:
 
 
 results, state_final = run_simulation(system)
 
 
-# In[23]:
+# In[21]:
 
 
 ds = get_panel(system, state_final)
 ds.head()
 
 
-# In[24]:
+# In[22]:
 
 
-ds['type_client'].value_counts()/60/60
-
-
-# In[25]:
-
-
-ds['client_missed'].value_counts()/ds.shape[0]
+tt = ds.pivot_table(columns=['hour'], index=['type_client'], values='client_missed', aggfunc='mean').reindex(['gold','silver','regular'])
+sns.heatmap(tt, vmin=0, vmax=1, cmap='RdBu_r')
+del tt
+plt.show()
 
 
 # # Что ещё надо добавить

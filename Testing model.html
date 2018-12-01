@@ -11779,6 +11779,7 @@ div#notebook {
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">importlib</span>
 
@@ -11854,8 +11855,6 @@ div#notebook {
 <span class="sd">    Требуемая от симуляции статистика</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">({</span>
-        <span class="c1">#&#39;busy_lines&#39;: get_n_busy_lines(state.lines_time_to_free),</span>
-        <span class="c1">#&#39;missed_clients_regular&#39;:state.n_missed_clients[&#39;regular&#39;]</span>
         <span class="p">},</span>
         <span class="n">name</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">data</span>
@@ -11890,6 +11889,8 @@ div#notebook {
               <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;_con&#39;</span><span class="p">,</span><span class="s1">&#39;_client&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;id_client&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">system</span><span class="o">.</span><span class="n">operators_ds</span><span class="p">,</span>
                   <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;operator_id&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_operator&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="p">,</span>
+                  <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_queue&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id_con&#39;</span><span class="p">:</span><span class="s1">&#39;id_connection&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_id&#39;</span><span class="p">:</span><span class="s1">&#39;id_operator&#39;</span><span class="p">,</span> <span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="s1">&#39;id_client&#39;</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">:</span><span class="s1">&#39;id_line&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;closed&#39;</span><span class="p">:</span><span class="s1">&#39;connection_closed&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;type_client&#39;</span><span class="p">,</span> <span class="s1">&#39;opeartor_type&#39;</span><span class="p">:</span><span class="s1">&#39;type_operator&#39;</span><span class="p">,</span>
@@ -11897,8 +11898,13 @@ div#notebook {
                             <span class="s1">&#39;call_start_time&#39;</span><span class="p">:</span><span class="s1">&#39;time_start_call&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;max_waiting_time&#39;</span><span class="p">:</span><span class="s1">&#39;client_max_waiting_time&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;missed&#39;</span><span class="p">:</span><span class="s1">&#39;client_missed&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;start_work_time&#39;</span><span class="p">:</span><span class="s1">&#39;operator_start_work_time&#39;</span>
+                            <span class="s1">&#39;start_work_time&#39;</span><span class="p">:</span><span class="s1">&#39;operator_start_work_time&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;priority&#39;</span><span class="p">:</span><span class="s1">&#39;client_priority&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;time_from&#39;</span><span class="p">:</span><span class="s1">&#39;time_quque_from&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;exit&#39;</span><span class="p">:</span><span class="s1">&#39;queue_exit&#39;</span>
                            <span class="p">})</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">hour</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;time_start_call&#39;</span><span class="p">]]</span>
+    <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;client_missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;client_missed&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ds</span>
 </pre></div>
 
@@ -12161,19 +12167,8 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">operators_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;start_work_time&#39;</span><span class="p">])</span>
-</pre></div>
 
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">add_operators</span><span class="p">([[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
+<span class="n">add_operators</span><span class="p">([[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
                <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="n">get_datetime</span><span class="p">(</span><span class="mi">11</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
                <span class="p">[</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span>  <span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">)],</span>
                <span class="p">[</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span>    <span class="n">get_datetime</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">)]],</span>
@@ -12181,88 +12176,6 @@ div#notebook {
 </pre></div>
 
 </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">operators_ds</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[12]:</div>
-
-
-
-<div class="output_html rendered_html output_subarea output_execute_result">
-<div>
-<style>
-    .dataframe thead tr:only-child th {
-        text-align: right;
-    }
-
-    .dataframe thead th {
-        text-align: left;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>id</th>
-      <th>type</th>
-      <th>start_work_time</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>0</td>
-      <td>regular</td>
-      <td>2018-01-01 07:00:00</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1</td>
-      <td>regular</td>
-      <td>2018-01-01 11:00:00</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2</td>
-      <td>silver</td>
-      <td>2018-01-01 07:00:00</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3</td>
-      <td>gold</td>
-      <td>2018-01-01 08:00:00</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -12277,7 +12190,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">init_state</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
@@ -12293,7 +12206,7 @@ div#notebook {
         <span class="c1"># Данные по всем соединениям операторов с клиентами</span>
         <span class="n">connections_ds</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_id&#39;</span><span class="p">,</span> <span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="s1">&#39;line_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time_start&#39;</span><span class="p">,</span><span class="s1">&#39;time_to_service&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">]),</span>
         <span class="c1"># Очередь клиентов на соединение</span>
-        <span class="n">queue_ds</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;time_from&#39;</span><span class="p">]</span>  <span class="c1"># </span>
+        <span class="n">queue_ds</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;time_from&#39;</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span>  <span class="c1"># </span>
         <span class="p">)</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">state</span>
@@ -12306,7 +12219,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_clients</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12336,7 +12249,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">add_clients_to_queue</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">clients_ids</span><span class="p">):</span>
@@ -12346,7 +12259,8 @@ div#notebook {
     <span class="k">for</span> <span class="n">cid</span> <span class="ow">in</span> <span class="n">clients_ids</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="n">cid</span><span class="p">,</span>
                 <span class="s1">&#39;priority&#39;</span><span class="p">:</span> <span class="n">type_priority_mapping</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cid</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">]],</span>
-                <span class="s1">&#39;time_from&#39;</span><span class="p">:</span><span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="p">}</span>
+                <span class="s1">&#39;time_from&#39;</span><span class="p">:</span><span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="p">,</span>
+                <span class="s1">&#39;exit&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
         <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
@@ -12357,21 +12271,21 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_clients_from_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Моделирование &quot;бросания трубки&quot; недождавшихся клиентов</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;right&#39;</span><span class="p">)</span>
     
     <span class="n">missed_cids</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">loc</span><span class="p">[([</span><span class="n">x</span><span class="o">.</span><span class="n">seconds</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="o">-</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]]</span><span class="o">&gt;</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;max_waiting_time&#39;</span><span class="p">]),</span> <span class="s1">&#39;client_id&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missed_cids</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
         <span class="c1"># Убираем клиента из очереди</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="ow">not</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">missed_cids</span><span class="p">)]]</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">missed_cids</span><span class="p">),</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Запись, что клиент бросил трубку</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed_cids</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">clients_ds</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">missed_cids</span><span class="p">),</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 
 </div>
@@ -12381,7 +12295,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">occupy_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12389,20 +12303,22 @@ div#notebook {
 <span class="sd">    Поиск свободных операторов, линий и клиентов в очереди. Установка соединений</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">connections_open</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">connections_ds</span><span class="p">[</span><span class="n">state</span><span class="o">.</span><span class="n">connections_ds</span><span class="p">[</span><span class="s1">&#39;closed&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
-    <span class="n">free_operators</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">operators_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[[</span><span class="ow">not</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">system</span><span class="o">.</span><span class="n">operators_ds</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">connections_open</span><span class="p">[</span><span class="s1">&#39;operator_id&#39;</span><span class="p">])]]</span>
+    <span class="n">free_operators</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">operators_ds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">operators_ds</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">connections_open</span><span class="p">[</span><span class="s1">&#39;operator_id&#39;</span><span class="p">])]</span>
     <span class="n">free_operators</span> <span class="o">=</span> <span class="n">free_operators</span><span class="p">[(</span><span class="n">free_operators</span><span class="p">[</span><span class="s1">&#39;start_work_time&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="p">)</span><span class="o">&amp;</span>
                                     <span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="o">&lt;</span><span class="n">free_operators</span><span class="p">[</span><span class="s1">&#39;start_work_time&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">system</span><span class="o">.</span><span class="n">operators_work_duration</span><span class="p">)]</span>
+    <span class="n">free_operators</span>
     <span class="n">free_lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">n_lines</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">connections_open</span><span class="p">[</span><span class="s1">&#39;line_id&#39;</span><span class="p">]]</span>
     
     <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">op_row</span> <span class="ow">in</span> <span class="n">free_operators</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">free_lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">break</span>
         <span class="n">cds</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span>
+        <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;exit&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
         <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">type_priority_mapping</span><span class="p">[</span><span class="n">op_row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cds</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
             <span class="k">continue</span>
         <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span><span class="s1">&#39;time_from&#39;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>
-        <span class="n">cclient</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">queue_ds</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">cclient</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">cline</span><span class="p">,</span> <span class="n">free_lines</span> <span class="o">=</span> <span class="n">free_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">free_lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">connections_ds</span><span class="p">),</span>
@@ -12424,7 +12340,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">release_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12444,7 +12360,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>        
@@ -12467,7 +12383,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
@@ -12482,7 +12398,7 @@ div#notebook {
     <span class="n">tqdm</span> <span class="o">=</span> <span class="n">tqdm_notebook</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="p">(</span><span class="n">system</span><span class="o">.</span><span class="n">time_end</span><span class="o">-</span><span class="n">system</span><span class="o">.</span><span class="n">time_start</span><span class="p">)</span><span class="o">.</span><span class="n">seconds</span><span class="o">//</span><span class="n">system</span><span class="o">.</span><span class="n">timedelta</span><span class="o">.</span><span class="n">seconds</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">state</span><span class="o">.</span><span class="n">time_cur</span><span class="o">&lt;</span><span class="n">system</span><span class="o">.</span><span class="n">time_end</span><span class="p">:</span>
         <span class="n">step</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-        <span class="c1">#results_frame = results_frame.append(calc_statistic(state))</span>
+        <span class="n">results_frame</span> <span class="o">=</span> <span class="n">results_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calc_statistic</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
         <span class="n">to_next_timestep</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">tqdm</span><span class="p">)</span>
     <span class="n">tqdm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -12496,19 +12412,20 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">system</span> <span class="o">=</span> <span class="n">msp</span><span class="o">.</span><span class="n">System</span><span class="p">(</span><span class="n">time_start</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
                 <span class="c1">#time_end=get_datetime(19,0),</span>
-                <span class="n">time_end</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+                <span class="n">time_end</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
                 <span class="n">timedelta</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
                 <span class="n">n_lines</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>  <span class="c1"># кол-во линий связи</span>
                 <span class="n">calls_stat</span><span class="o">=</span><span class="n">calls_stat_ds</span><span class="p">,</span>  <span class="c1"># частоты звонков</span>
                 <span class="n">time_to_serve</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span>  <span class="c1"># seconds # временная константа. время обслуживания каждого клиента</span>
                 <span class="n">client_types</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="s1">&#39;silver&#39;</span><span class="p">,</span> <span class="s1">&#39;gold&#39;</span><span class="p">],</span>  <span class="c1"># типы клиентов. затем добавятся silver и gold</span>
                 <span class="n">operators_ds</span><span class="o">=</span><span class="n">operators_ds</span><span class="p">,</span>
-                <span class="n">operators_work_duration</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+                <span class="n">operators_work_duration</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
+                <span class="n">n_lines_vip</span> <span class="o">=</span> <span class="mi">5</span>
                 <span class="p">)</span>
 </pre></div>
 
@@ -12519,7 +12436,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span><span class="p">,</span> <span class="n">state_final</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
@@ -12543,13 +12460,13 @@ div#notebook {
 
  
  
-<div id="5ee61533-4a69-4c34-8db4-1356e3e94f5e"></div>
+<div id="b5bb901d-2fc1-40b0-b640-88fbc902ea7d"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
+var element = $('#b5bb901d-2fc1-40b0-b640-88fbc902ea7d');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "fd3c2e2cf9b543cea4ac23700c7fccb1", "version_major": 2, "version_minor": 0}
+{"model_id": "eeae6e86a4df4e4e888a4ae6be651687", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -12572,7 +12489,7 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">get_panel</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state_final</span><span class="p">)</span>
@@ -12589,7 +12506,7 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[23]:</div>
+<div class="prompt output_prompt">Out[21]:</div>
 
 
 
@@ -12625,6 +12542,10 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
       <th>client_missed</th>
       <th>type_operator</th>
       <th>operator_start_work_time</th>
+      <th>client_priority</th>
+      <th>time_quque_from</th>
+      <th>queue_exit</th>
+      <th>hour</th>
     </tr>
   </thead>
   <tbody>
@@ -12634,79 +12555,99 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
       <td>0</td>
       <td>0</td>
       <td>0</td>
-      <td>2018-01-01 07:00:12</td>
+      <td>2018-01-01 07:00:35</td>
       <td>00:10:00</td>
       <td>True</td>
       <td>regular</td>
-      <td>2018-01-01 07:00:12</td>
+      <td>2018-01-01 07:00:35</td>
       <td>300</td>
-      <td>False</td>
+      <td>1</td>
       <td>regular</td>
       <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:35</td>
+      <td>True</td>
+      <td>7</td>
     </tr>
     <tr>
       <th>1</th>
       <td>1</td>
       <td>2</td>
-      <td>2</td>
+      <td>0</td>
       <td>1</td>
-      <td>2018-01-01 07:00:47</td>
+      <td>2018-01-01 07:00:35</td>
       <td>00:10:00</td>
       <td>True</td>
       <td>regular</td>
-      <td>2018-01-01 07:00:47</td>
+      <td>2018-01-01 07:00:35</td>
       <td>300</td>
-      <td>False</td>
+      <td>1</td>
       <td>silver</td>
       <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:35</td>
+      <td>True</td>
+      <td>7</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2</td>
       <td>0</td>
-      <td>18</td>
+      <td>15</td>
       <td>0</td>
-      <td>2018-01-01 07:10:14</td>
+      <td>2018-01-01 07:10:37</td>
       <td>00:10:00</td>
       <td>True</td>
       <td>regular</td>
-      <td>2018-01-01 07:06:25</td>
+      <td>2018-01-01 07:05:43</td>
       <td>300</td>
-      <td>False</td>
+      <td>1</td>
       <td>regular</td>
       <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:05:43</td>
+      <td>True</td>
+      <td>7</td>
     </tr>
     <tr>
       <th>3</th>
       <td>3</td>
       <td>2</td>
-      <td>19</td>
-      <td>0</td>
-      <td>2018-01-01 07:10:49</td>
+      <td>16</td>
+      <td>1</td>
+      <td>2018-01-01 07:10:37</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>regular</td>
-      <td>2018-01-01 07:06:59</td>
+      <td>silver</td>
+      <td>2018-01-01 07:06:13</td>
       <td>300</td>
-      <td>False</td>
+      <td>1</td>
       <td>silver</td>
       <td>2018-01-01 07:00:00</td>
+      <td>2</td>
+      <td>2018-01-01 07:06:13</td>
+      <td>True</td>
+      <td>7</td>
     </tr>
     <tr>
       <th>4</th>
       <td>4</td>
       <td>0</td>
-      <td>48</td>
+      <td>55</td>
       <td>0</td>
-      <td>2018-01-01 07:20:16</td>
+      <td>2018-01-01 07:20:39</td>
       <td>00:10:00</td>
       <td>True</td>
       <td>regular</td>
-      <td>2018-01-01 07:15:30</td>
+      <td>2018-01-01 07:15:55</td>
       <td>300</td>
-      <td>False</td>
+      <td>1</td>
       <td>regular</td>
       <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:15:55</td>
+      <td>True</td>
+      <td>7</td>
     </tr>
   </tbody>
 </table>
@@ -12721,10 +12662,13 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type_client&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">/</span><span class="mi">60</span><span class="o">/</span><span class="mi">60</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type_client&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;client_missed&#39;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">([</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span><span class="s1">&#39;regular&#39;</span><span class="p">])</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span><span class="p">)</span>
+<span class="k">del</span> <span class="n">tt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
 </div>
@@ -12737,51 +12681,154 @@ var element = $('#5ee61533-4a69-4c34-8db4-1356e3e94f5e');
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[24]:</div>
+<div class="prompt"></div>
 
 
 
 
-<div class="output_text output_subarea output_execute_result">
-<pre>regular    0.069444
-silver     0.063889
-gold       0.028611
-Name: type_client, dtype: float64</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;client_missed&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">/</span><span class="n">ds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[25]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>True     0.650086
-False    0.349914
-Name: client_missed, dtype: float64</pre>
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
 </div>
 
 </div>
