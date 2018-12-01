@@ -91,6 +91,28 @@ def get_panel(system, state):
 # In[8]:
 
 
+def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(19,0)):
+    all_time = pd.DataFrame(pd.date_range(time_from, time_to, freq='s'), columns=['ctime'])[:-1]
+    all_time.index = all_time['ctime']
+    tts = []
+    for idx, row in ds.iterrows():
+        tt = all_time.loc[row['time_start_connection']:row['time_start_connection']+row['time_to_service']][:-1]
+        for f in ['id_connection', 'id_line', 'id_client', 'id_operator']:
+            tt[f] = row[f]
+        tts.append(tt)
+    line_loads_ds = pd.concat(tts)
+    del tts
+    line_loads_ds = pd.merge(all_time, line_loads_ds, on='ctime', how='left')
+    line_loads_ds = line_loads_ds.fillna(-1)
+    line_loads_ds = line_loads_ds.pivot_table(index='ctime', columns='id_line', values='id_connection')
+    line_loads_ds = line_loads_ds.drop(-1,axis=1)
+    line_loads_ds = line_loads_ds.fillna(0)
+    return line_loads_ds
+
+
+# In[9]:
+
+
 def add_operator(type_, start_work_time, ds):
     ds.loc[len(ds)] = {'id':len(operators_ds), 'type':type_, 'start_work_time':start_work_time}
 def add_operators(ar, ds):
@@ -101,7 +123,7 @@ def add_operators(ar, ds):
 
 # Заданные значения частот звонков разных клиентов
 
-# In[9]:
+# In[10]:
 
 
 calls_stat_ds = pd.DataFrame()
@@ -116,7 +138,7 @@ print('Частота звонков')
 calls_stat_ds
 
 
-# In[10]:
+# In[11]:
 
 
 operators_ds = pd.DataFrame(columns=['id', 'type', 'start_work_time'])
@@ -130,7 +152,7 @@ add_operators([['regular', get_datetime(7,0)],
 
 # # Модель 1
 
-# In[11]:
+# In[12]:
 
 
 def init_state(system):
@@ -152,7 +174,7 @@ def init_state(system):
     return state
 
 
-# In[12]:
+# In[13]:
 
 
 def generate_clients(system, state):
@@ -175,7 +197,7 @@ def generate_clients(system, state):
     return ids
 
 
-# In[13]:
+# In[14]:
 
 
 def add_clients_to_queue(state, clients_ids):
@@ -190,7 +212,7 @@ def add_clients_to_queue(state, clients_ids):
         state.queue_ds = state.queue_ds.append(data, ignore_index=True)
 
 
-# In[14]:
+# In[15]:
 
 
 def drop_clients_from_queue(state):
@@ -207,7 +229,7 @@ def drop_clients_from_queue(state):
         state.clients_ds.loc[state.clients_ds['id'].isin(missed_cids), 'missed'] = True
 
 
-# In[15]:
+# In[16]:
 
 
 def occupy_operators(system, state):
@@ -245,7 +267,7 @@ def occupy_operators(system, state):
     return free_operators
 
 
-# In[16]:
+# In[17]:
 
 
 def release_operators(system, state):
@@ -258,7 +280,7 @@ def release_operators(system, state):
     return ended_connections
 
 
-# In[17]:
+# In[18]:
 
 
 def step(system, state):        
@@ -274,7 +296,7 @@ def step(system, state):
     drop_clients_from_queue(state)
 
 
-# In[18]:
+# In[19]:
 
 
 def run_simulation(system):
@@ -296,7 +318,7 @@ def run_simulation(system):
     return results_frame, state
 
 
-# In[19]:
+# In[20]:
 
 
 system = msp.System(time_start=get_datetime(7,0),
@@ -313,25 +335,45 @@ system = msp.System(time_start=get_datetime(7,0),
                 )
 
 
-# In[20]:
+# In[21]:
 
 
 results, state_final = run_simulation(system)
 
 
-# In[21]:
+# In[22]:
 
 
 ds = get_panel(system, state_final)
 ds.head()
 
 
-# In[22]:
+# In[23]:
 
 
 tt = ds.pivot_table(columns=['hour'], index=['type_client'], values='client_missed', aggfunc='mean').reindex(['gold','silver','regular'])
 sns.heatmap(tt, vmin=0, vmax=1, cmap='RdBu_r')
 del tt
+plt.show()
+
+
+# In[24]:
+
+
+line_loads_ds = get_line_loads(ds)
+
+
+# In[25]:
+
+
+(line_loads_ds>0).plot()
+plt.show()
+
+
+# In[26]:
+
+
+(line_loads_ds>0).sum(axis=1).plot()
 plt.show()
 
 
