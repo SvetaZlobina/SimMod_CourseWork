@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import importlib
 from tqdm import tqdm_notebook
 
 
-# In[2]:
+# In[ ]:
 
 
 try: importlib.reload(msp)
@@ -23,14 +23,14 @@ except: import ModSimPy as msp  # Библиотека с github - предна�
 
 # # Helpful functions
 
-# In[3]:
+# In[ ]:
 
 
 type_priority_mapping = {k:v for k,v in zip(['gold','silver','regular'],range(1,4))}
 type_salary_mapping = {k:v for k,v in zip(['gold','silver','regular'], [600*8, 500*8, 400*8])}
 
 
-# In[4]:
+# In[ ]:
 
 
 def to_next_timestep(system, state, tqdm):
@@ -41,7 +41,7 @@ def to_next_timestep(system, state, tqdm):
     tqdm.update(system.timedelta.seconds)
 
 
-# In[5]:
+# In[ ]:
 
 
 def calc_statistic(state):
@@ -54,14 +54,14 @@ def calc_statistic(state):
     return data
 
 
-# In[6]:
+# In[ ]:
 
 
 def get_datetime(hours, mins, secs=None):
     return datetime.datetime(2018,1,1,hours,mins, secs if secs else 0)
 
 
-# In[7]:
+# In[ ]:
 
 
 def get_panel(system, state):
@@ -88,7 +88,7 @@ def get_panel(system, state):
     return ds
 
 
-# In[8]:
+# In[ ]:
 
 
 def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(19,0)):
@@ -106,11 +106,11 @@ def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(1
     line_loads_ds = line_loads_ds.fillna(-1)
     line_loads_ds = line_loads_ds.pivot_table(index='ctime', columns='id_line', values='id_connection')
     line_loads_ds = line_loads_ds.drop(-1,axis=1)
-    line_loads_ds = line_loads_ds.fillna(0)
+    #line_loads_ds = line_loads_ds.fillna(-1)
     return line_loads_ds
 
 
-# In[9]:
+# In[ ]:
 
 
 def add_operator(type_, start_work_time, ds):
@@ -123,7 +123,7 @@ def add_operators(ar, ds):
 
 # Заданные значения частот звонков разных клиентов
 
-# In[10]:
+# In[ ]:
 
 
 calls_stat_ds = pd.DataFrame()
@@ -138,7 +138,7 @@ print('Частота звонков')
 calls_stat_ds
 
 
-# In[11]:
+# In[ ]:
 
 
 operators_ds = pd.DataFrame(columns=['id', 'type', 'start_work_time'])
@@ -150,7 +150,7 @@ add_operators([['regular', get_datetime(7,0)],
              operators_ds)
 
 
-# In[12]:
+# In[ ]:
 
 
 for i in range(50):
@@ -159,7 +159,7 @@ for i in range(50):
 
 # # Модель 1
 
-# In[13]:
+# In[ ]:
 
 
 def init_state(system):
@@ -175,13 +175,13 @@ def init_state(system):
         # Данные по всем соединениям операторов с клиентами
         connections_ds=pd.DataFrame(columns=['id', 'operator_id', 'client_id', 'line_id', 'time_start','time_to_service', 'closed']),
         # Очередь клиентов на соединение
-        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from', 'exit']  # 
+        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from', 'blocked', 'exit']  # 
         )
     )
     return state
 
 
-# In[14]:
+# In[ ]:
 
 
 def generate_clients(system, state):
@@ -204,7 +204,7 @@ def generate_clients(system, state):
     return ids
 
 
-# In[15]:
+# In[ ]:
 
 
 def add_clients_to_queue(state, clients_ids):
@@ -215,11 +215,12 @@ def add_clients_to_queue(state, clients_ids):
         data = {'client_id':cid,
                 'priority': type_priority_mapping[state.clients_ds.loc[cid,'type']],
                 'time_from':state.time_cur,
+                'blocked':False,
                 'exit':False}
         state.queue_ds = state.queue_ds.append(data, ignore_index=True)
 
 
-# In[123]:
+# In[ ]:
 
 
 def drop_clients_from_queue(state):
@@ -238,7 +239,22 @@ def drop_clients_from_queue(state):
         state.clients_ds.loc[state.clients_ds['id'].isin(missed_cids), 'missed'] = True
 
 
-# In[136]:
+# In[ ]:
+
+
+def block_clients_in_queue(state):
+    cds = state.queue_ds[state.queue_ds['priority']==3]
+    cds = cds[cds['exit']==False]
+    cds = cds[(state.time_cur-cds['time_from'])==datetime.timedelta(seconds=1)]
+    state.queue_ds.loc[cds['client_id'], 'blocked'] = True
+    
+    cds = state.queue_ds[state.queue_ds['priority']<3]
+    cds = cds[cds['exit']==False]
+    cds = cds[cds['time_from']==state.time_cur]
+    state.queue_ds.loc[cds['client_id'], 'blocked'] = True
+
+
+# In[ ]:
 
 
 def occupy_operators(system, state):
@@ -257,7 +273,7 @@ def occupy_operators(system, state):
         if len(free_lines) == 0:
             break
         cds = state.queue_ds
-        cds = cds[cds['exit']==False]
+        cds = cds[(cds['exit']==False)&(cds['blocked']==False)]
         cds = cds[cds['priority']>=type_priority_mapping[op_row['type']]]
         if len(cds)==0:
             continue
@@ -274,11 +290,11 @@ def occupy_operators(system, state):
             'closed':False,
             }
         state.connections_ds = state.connections_ds.append(data, ignore_index=True)
-        state.queue_ds.iat[cclient['client_id'],3] = True #exit=True
+        state.queue_ds.at[cclient['client_id'],'exit'] = True 
     return free_operators
 
 
-# In[18]:
+# In[ ]:
 
 
 def release_operators(system, state):
@@ -291,7 +307,7 @@ def release_operators(system, state):
     return ended_connections
 
 
-# In[19]:
+# In[ ]:
 
 
 def step(system, state):        
@@ -300,6 +316,7 @@ def step(system, state):
     """
     new_clients_id = generate_clients(system, state)
     add_clients_to_queue(state, new_clients_id)
+    block_clients_in_queue(state)
     
     occupy_operators(system, state)
     release_operators(system, state)
@@ -307,7 +324,7 @@ def step(system, state):
     drop_clients_from_queue(state)
 
 
-# In[20]:
+# In[ ]:
 
 
 def run_simulation(system):
@@ -329,7 +346,7 @@ def run_simulation(system):
     return results_frame, state
 
 
-# In[137]:
+# In[ ]:
 
 
 system = msp.System(time_start=get_datetime(7,0),
@@ -346,62 +363,52 @@ system = msp.System(time_start=get_datetime(7,0),
                 )
 
 
-# In[138]:
+# In[ ]:
 
 
 results, state_final = run_simulation(system)
 
 
-# In[139]:
+# In[ ]:
 
 
 ds = get_panel(system, state_final)
 ds.head()
 
 
-# In[140]:
+# In[ ]:
 
 
 tt = ds.pivot_table(columns=['hour'], index=['type_client'], values='client_missed', aggfunc='mean').reindex(['gold','silver','regular'])
-sns.heatmap(tt, vmin=0, vmax=1, cmap='RdBu_r')
+sns.heatmap(tt, vmin=0, vmax=1, cmap='Reds')
 del tt
 plt.show()
 
 
-# In[141]:
+# In[ ]:
 
 
 line_loads_ds = get_line_loads(ds, time_to=get_datetime(8,0))
 
 
-# In[142]:
+# In[ ]:
 
 
 (line_loads_ds>0).sum(1).fillna(0).plot()
 plt.show()
 
 
-# In[143]:
+# In[ ]:
 
 
-ds
-
-
-# In[144]:
-
-
-ds[ds['type_operator']=='silver']['client_missed']
-
-
-# In[148]:
-
-
-ds.pivot_table(index='type_operator', columns='type_client', values='id_connection', aggfunc='count', fill_value=0)
+sns.heatmap(ds.pivot_table(index='type_operator', columns='type_client', values='id_connection', aggfunc='count', fill_value=0),
+           cmap='Blues')
+plt.show()
 
 
 # # Что ещё надо добавить
 
-# Отдельные линии для випов
+# Сигнал занятости линий
 
 # Начальные задержки для каждого звонка
 
