@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import importlib
 from tqdm import tqdm_notebook
 
 
-# In[ ]:
+# In[2]:
 
 
 try: importlib.reload(msp)
@@ -23,14 +23,14 @@ except: import ModSimPy as msp  # Библиотека с github - предна�
 
 # # Helpful functions
 
-# In[ ]:
+# In[3]:
 
 
 type_priority_mapping = {k:v for k,v in zip(['gold','silver','regular'],range(1,4))}
 type_salary_mapping = {k:v for k,v in zip(['gold','silver','regular'], [600*8, 500*8, 400*8])}
 
 
-# In[ ]:
+# In[4]:
 
 
 def to_next_timestep(system, state, tqdm):
@@ -41,7 +41,7 @@ def to_next_timestep(system, state, tqdm):
     tqdm.update(system.timedelta.seconds)
 
 
-# In[ ]:
+# In[5]:
 
 
 def calc_statistic(state):
@@ -54,14 +54,14 @@ def calc_statistic(state):
     return data
 
 
-# In[ ]:
+# In[6]:
 
 
 def get_datetime(hours, mins, secs=None):
     return datetime.datetime(2018,1,1,hours,mins, secs if secs else 0)
 
 
-# In[ ]:
+# In[7]:
 
 
 def get_panel(system, state):
@@ -88,7 +88,7 @@ def get_panel(system, state):
     return ds
 
 
-# In[ ]:
+# In[8]:
 
 
 def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(19,0)):
@@ -110,11 +110,12 @@ def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(1
     return line_loads_ds
 
 
-# In[ ]:
+# In[9]:
 
 
 def add_operator(type_, start_work_time, ds):
-    ds.loc[len(ds)] = {'id':len(operators_ds), 'type':type_, 'start_work_time':start_work_time}
+    ds.loc[len(ds)] = {'id':len(operators_ds), 'type':type_,
+                       'priority':type_priority_mapping[type_], 'start_work_time':start_work_time}
 def add_operators(ar, ds):
     for t, swt in ar: add_operator(t, swt, ds)
 
@@ -123,7 +124,7 @@ def add_operators(ar, ds):
 
 # Заданные значения частот звонков разных клиентов
 
-# In[ ]:
+# In[10]:
 
 
 calls_stat_ds = pd.DataFrame()
@@ -138,10 +139,10 @@ print('Частота звонков')
 calls_stat_ds
 
 
-# In[ ]:
+# In[11]:
 
 
-operators_ds = pd.DataFrame(columns=['id', 'type', 'start_work_time'])
+operators_ds = pd.DataFrame(columns=['id', 'type', 'priority','start_work_time'])
 
 add_operators([['regular', get_datetime(7,0)],
                ['regular', get_datetime(11,0)],
@@ -150,7 +151,7 @@ add_operators([['regular', get_datetime(7,0)],
              operators_ds)
 
 
-# In[ ]:
+# In[12]:
 
 
 for i in range(50):
@@ -159,7 +160,7 @@ for i in range(50):
 
 # # Модель 1
 
-# In[ ]:
+# In[13]:
 
 
 def init_state(system):
@@ -168,20 +169,23 @@ def init_state(system):
     """
     state = msp.State(
         time_cur=system.time_start,  # Текущее время
-        # Данные по линиям связи (возможно уже не нужны)
-        lines_ds=pd.DataFrame({'time_to_free':0 for i in range(system.n_lines)}, index=range(system.n_lines)),
         # Данные по всем клиентам
         clients_ds=pd.DataFrame(columns=['id','type','call_start_time', 'max_waiting_time', 'missed']),
         # Данные по всем соединениям операторов с клиентами
         connections_ds=pd.DataFrame(columns=['id', 'operator_id', 'client_id', 'line_id', 'time_start','time_to_service', 'closed']),
         # Очередь клиентов на соединение
-        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from', 'blocked', 'exit']  # 
-        )
+        queue_ds=pd.DataFrame(columns=['client_id','priority', 'time_from', 'blocked', 'exit']),  # 
+        # Клиенты, которые в очереди, но ждут оценки времени, или вводят номера карт
+        blocked_ds=pd.DataFrame(columns=['client_id','type','time_from','time_to', 'unblocked'])
     )
+    state.free_lines = list(range(system.n_lines))
+    state.free_operators =  {t:[] for t in ['regular','silver','gold']}
+    state.blocked_clients = {t:[] for t in ['regular','silver','gold']}
+    state.waiting_clients = {t:[] for t in ['regular','silver','gold']}
     return state
 
 
-# In[ ]:
+# In[14]:
 
 
 def generate_clients(system, state):
@@ -204,7 +208,7 @@ def generate_clients(system, state):
     return ids
 
 
-# In[ ]:
+# In[15]:
 
 
 def add_clients_to_queue(state, clients_ids):
@@ -213,14 +217,15 @@ def add_clients_to_queue(state, clients_ids):
     """
     for cid in clients_ids:
         data = {'client_id':cid,
-                'priority': type_priority_mapping[state.clients_ds.loc[cid,'type']],
+                'priority': type_priority_mapping[state.clients_ds.at[cid,'type']],
                 'time_from':state.time_cur,
                 'blocked':False,
                 'exit':False}
         state.queue_ds = state.queue_ds.append(data, ignore_index=True)
+        state.waiting_clients[state.clients_ds.at[cid,'type']].append(cid)
 
 
-# In[ ]:
+# In[16]:
 
 
 def drop_clients_from_queue(state):
@@ -237,9 +242,12 @@ def drop_clients_from_queue(state):
         state.queue_ds.loc[state.queue_ds['client_id'].isin(missed_cids), 'exit'] = True
         # Запись, что клиент бросил трубку
         state.clients_ds.loc[state.clients_ds['id'].isin(missed_cids), 'missed'] = True
+        # Удаление клиента из очереди, оптимизирующей расчёты
+        for i in missed_cids:
+            state.waiting_clients[state.clients_ds.at[i, 'type']].remove(i)
 
 
-# In[ ]:
+# In[17]:
 
 
 def block_clients_in_queue(state):
@@ -247,54 +255,81 @@ def block_clients_in_queue(state):
     cds = cds[cds['exit']==False]
     cds = cds[(state.time_cur-cds['time_from'])==datetime.timedelta(seconds=1)]
     state.queue_ds.loc[cds['client_id'], 'blocked'] = True
+    for i in cds['client_id']:
+        if i in state.waiting_clients['regular']:
+            state.waiting_clients['regular'].remove(i)
     
     cds = state.queue_ds[state.queue_ds['priority']<3]
     cds = cds[cds['exit']==False]
     cds = cds[cds['time_from']==state.time_cur]
     state.queue_ds.loc[cds['client_id'], 'blocked'] = True
+    for i in cds['client_id']:
+        if i in state.waiting_clients['silver']:
+            state.waiting_clients['silver'].remove(i)
+        if i in state.waiting_clients['gold']:
+            state.waiting_clients['gold'].remove(i)
 
 
-# In[ ]:
+# In[18]:
+
+
+def generate_operators(system, state):
+    if state.time_cur.minute==0 and state.time_cur.second==0:
+        new_operators = system.operators_ds[system.operators_ds['start_work_time']==state.time_cur]
+        for idx, row in new_operators.iterrows():
+            state.free_operators[row['type']].append(row['id'])
+
+
+# In[19]:
+
+
+def drop_operators(system, state):
+    for t, ids in state.free_operators.items():
+        operators = system.operators_ds.loc[ids]
+        operators = operators[operators['start_work_time']+system.operators_work_duration<=state.time_cur]
+        for i in operators['id']:
+            state.free_operators[t].remove(i)
+
+
+# In[20]:
 
 
 def occupy_operators(system, state):
     """
     Поиск свободных операторов, линий и клиентов в очереди. Установка соединений
     """
-    connections_open = state.connections_ds[state.connections_ds['closed']==False]
-    free_operators = system.operators_ds.loc[-system.operators_ds['id'].isin(connections_open['operator_id'])]
-    free_operators = free_operators[(free_operators['start_work_time']<state.time_cur)&
-                                    (state.time_cur<free_operators['start_work_time']+system.operators_work_duration)]
-    free_operators['priority'] = free_operators['type'].transform(lambda x:type_priority_mapping[x])
-    free_operators = free_operators.sort_values('priority').drop('priority',axis=1)
-    free_lines = [x for x in range(system.n_lines) if x not in connections_open['line_id'].drop_duplicates().values]
-    
-    for idx, op_row in free_operators.iterrows():
-        if len(free_lines) == 0:
-            break
-        cds = state.queue_ds
-        cds = cds[(cds['exit']==False)&(cds['blocked']==False)]
-        cds = cds[cds['priority']>=type_priority_mapping[op_row['type']]]
-        if len(cds)==0:
-            continue
-        cds = cds.sort_values(['priority','time_from'], ascending=[True, True])
-        cclient = cds.iloc[0]
-        cline, free_lines = free_lines[0], free_lines[1:]
-        data = {
-            'id': len(state.connections_ds),
-            'operator_id':op_row['id'],
-            'client_id':cclient['client_id'],
-            'line_id':cline,
-            'time_start':state.time_cur,
-            'time_to_service': datetime.timedelta(seconds=600),
-            'closed':False,
-            }
-        state.connections_ds = state.connections_ds.append(data, ignore_index=True)
-        state.queue_ds.at[cclient['client_id'],'exit'] = True 
-    return free_operators
+    for type_op in ['regular','silver','gold']:
+        ids_op = state.free_operators[type_op]
+        if len(ids_op)==0: continue
+        if len(state.free_lines)==0: break
+        clients_available = state.waiting_clients['regular']
+        for t in ['silver', 'gold']:
+            if type_op == t:
+                clients_available = state.waiting_clients[t]+clients_available
+        if len(clients_available)==0: continue
+            
+        op_cl_pairs = list(zip(ids_op, clients_available))
+        for op_id, cl_id in op_cl_pairs:
+            for t in ['regular','silver','gold']:
+                if cl_id in state.waiting_clients[t]:
+                    state.waiting_clients[t].pop(0)
+            state.free_operators[type_op].pop(0)
+            l_id = state.free_lines.pop(0)
+            data = {
+                'id': len(state.connections_ds),
+                'operator_id':op_id,
+                'client_id':cl_id,
+                'line_id':l_id,
+                'time_start':state.time_cur,
+                'time_to_service': datetime.timedelta(seconds=600),
+                'closed':False,
+                }
+            state.connections_ds = state.connections_ds.append(data, ignore_index=True)
+            state.queue_ds.at[cl_id,'exit'] = True 
+    return
 
 
-# In[ ]:
+# In[21]:
 
 
 def release_operators(system, state):
@@ -304,10 +339,14 @@ def release_operators(system, state):
     cds = state.connections_ds[state.connections_ds['closed']==False]
     ended_connections = cds[(state.time_cur-cds['time_start'])>cds['time_to_service']]
     state.connections_ds.loc[ended_connections.index, 'closed'] = True
+    for idx, row in ended_connections.iterrows():
+        state.free_operators[system.operators_ds.at[row['operator_id'],'type']].append(row['operator_id'])
+        state.free_lines.append(row['line_id'])
+        state.free_lines = sorted(state.free_lines)
     return ended_connections
 
 
-# In[ ]:
+# In[22]:
 
 
 def step(system, state):        
@@ -316,7 +355,11 @@ def step(system, state):
     """
     new_clients_id = generate_clients(system, state)
     add_clients_to_queue(state, new_clients_id)
-    block_clients_in_queue(state)
+    #block_clients_in_queue(state)
+    
+    #print('{regular} {silver} {gold}'.format(**{k:state.free_operators[k] for k in['regular','silver','gold']}))
+    generate_operators(system, state)
+    drop_operators(system, state)   
     
     occupy_operators(system, state)
     release_operators(system, state)
@@ -324,7 +367,7 @@ def step(system, state):
     drop_clients_from_queue(state)
 
 
-# In[ ]:
+# In[23]:
 
 
 def run_simulation(system):
@@ -374,6 +417,18 @@ results, state_final = run_simulation(system)
 
 ds = get_panel(system, state_final)
 ds.head()
+
+
+# In[ ]:
+
+
+ds
+
+
+# In[ ]:
+
+
+ds['type_operator'].value_counts()
 
 
 # In[ ]:
