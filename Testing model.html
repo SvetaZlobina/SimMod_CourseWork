@@ -11890,6 +11890,8 @@ div#notebook {
                   <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;operator_id&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_operator&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">],</span>
                   <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;id_client&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_queue&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">],</span>
+                  <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;id_client&#39;</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;_block&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;id_con&#39;</span><span class="p">:</span><span class="s1">&#39;id_connection&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_id&#39;</span><span class="p">:</span><span class="s1">&#39;id_operator&#39;</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">:</span><span class="s1">&#39;id_line&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;closed&#39;</span><span class="p">:</span><span class="s1">&#39;connection_closed&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;type_client&#39;</span><span class="p">,</span> <span class="s1">&#39;opeartor_type&#39;</span><span class="p">:</span><span class="s1">&#39;type_operator&#39;</span><span class="p">,</span>
@@ -12238,7 +12240,7 @@ div#notebook {
         <span class="c1"># Очередь клиентов на соединение</span>
         <span class="s1">&#39;queue_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="s1">&#39;time_from&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked&#39;</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">]),</span>  <span class="c1"># </span>
         <span class="c1"># Клиенты, которые в очереди, но ждут оценки времени, или вводят номера карт</span>
-        <span class="s1">&#39;blocked_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;time_from&#39;</span><span class="p">,</span><span class="s1">&#39;time_to&#39;</span><span class="p">,</span> <span class="s1">&#39;unblocked&#39;</span><span class="p">])</span>
+        <span class="s1">&#39;blocked_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;time_from&#39;</span><span class="p">,</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="s1">&#39;unblocked&#39;</span><span class="p">])</span>
     <span class="p">}</span>
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;n_lines&#39;</span><span class="p">]))</span>
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_operators&#39;</span><span class="p">]</span> <span class="o">=</span>  <span class="p">{</span><span class="n">t</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span><span class="s1">&#39;gold&#39;</span><span class="p">]}</span>
@@ -12246,14 +12248,21 @@ div#notebook {
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">t</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span><span class="s1">&#39;gold&#39;</span><span class="p">]}</span>
     
     <span class="k">for</span> <span class="n">ds</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">],</span>
-                  <span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">,</span><span class="s1">&#39;max_waiting_time&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;max_waiting_time&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_id&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;client_id&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;line_id&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;client_id&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;priority&#39;</span><span class="p">],</span>
                   <span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">,</span><span class="s1">&#39;client_id&#39;</span><span class="p">]]:</span>
         <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ds</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="p">[[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">],</span>
+                  <span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">,</span> <span class="s1">&#39;unblocked&#39;</span><span class="p">]]:</span>
+        <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">state</span>
 </pre></div>
 
@@ -12305,7 +12314,7 @@ div#notebook {
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="n">cid</span><span class="p">,</span>
                 <span class="s1">&#39;priority&#39;</span><span class="p">:</span> <span class="n">type_priority_mapping</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">cid</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">]],</span>
                 <span class="s1">&#39;time_from&#39;</span><span class="p">:</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">],</span>
-                <span class="s1">&#39;blocked&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;blocked&#39;</span><span class="p">:</span><span class="kc">False</span> <span class="k">if</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">cid</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;regular&#39;</span> <span class="k">else</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="s1">&#39;exit&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">cid</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cid</span><span class="p">)</span>
@@ -12337,7 +12346,10 @@ div#notebook {
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">][</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">missed_cids</span><span class="p">),</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Удаление клиента из очереди, оптимизирующей расчёты</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">missed_cids</span><span class="p">:</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">cl_type</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked_clients&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">cl_type</span><span class="p">]:</span>
+                    <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">cl_type</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12356,18 +12368,38 @@ div#notebook {
     <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">])</span><span class="o">==</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;blocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]:</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">is_missed</span> <span class="o">=</span> <span class="n">msp</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">is_missed</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;time_from&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+                <span class="s1">&#39;unblocked&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]:</span>
+                <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    
     
     <span class="n">cds</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">][</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">][</span><span class="s1">&#39;priority&#39;</span><span class="p">]</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">]</span>
     <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;exit&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
     <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]]</span>
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;blocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;silver&#39;</span><span class="p">]:</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;silver&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;gold&#39;</span><span class="p">]:</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;gold&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
+                <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="n">t</span><span class="p">,</span>
+                <span class="s1">&#39;time_from&#39;</span><span class="p">:</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span> <span class="c1">#TEMP constant</span>
+                <span class="s1">&#39;unblocked&#39;</span><span class="p">:</span> <span class="kc">False</span>
+               <span class="p">}</span> 
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -12378,6 +12410,29 @@ div#notebook {
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">unblock_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;unblocked&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]]</span>
+    
+    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;unblocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">][</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]),</span> <span class="s1">&#39;blocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">blocked_ids</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">blocked_ids</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12394,7 +12449,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12412,7 +12467,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">occupy_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12457,7 +12512,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">release_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12481,7 +12536,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>        
@@ -12490,7 +12545,8 @@ div#notebook {
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">new_clients_id</span> <span class="o">=</span> <span class="n">generate_clients</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
     <span class="n">add_clients_to_queue</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">new_clients_id</span><span class="p">)</span>
-    <span class="c1">#block_clients_in_queue(state)</span>
+    <span class="n">block_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">unblock_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
     
     <span class="c1">#print(&#39;{regular} {silver} {gold}&#39;.format(**{k:state.free_operators[k] for k in[&#39;regular&#39;,&#39;silver&#39;,&#39;gold&#39;]}))</span>
     <span class="n">generate_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
@@ -12509,7 +12565,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
@@ -12528,7 +12584,7 @@ div#notebook {
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">results_frame</span><span class="p">,</span> <span class="n">state</span>
-        <span class="n">results_frame</span> <span class="o">=</span> <span class="n">results_frame</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">calc_statistic</span><span class="p">(</span><span class="n">state</span><span class="p">))</span>
+        <span class="c1">#results_frame = results_frame.append(calc_statistic(state))</span>
         <span class="n">to_next_timestep</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">tqdm</span><span class="p">)</span>
     <span class="n">tqdm</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -12542,7 +12598,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">system</span> <span class="o">=</span>  <span class="p">{</span><span class="s1">&#39;time_start&#39;</span><span class="p">:</span> <span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
@@ -12566,7 +12622,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span><span class="p">,</span> <span class="n">state_final</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
@@ -12590,13 +12646,13 @@ div#notebook {
 
  
  
-<div id="4fcc5a8a-0214-4ef9-80fa-189fba7ee346"></div>
+<div id="16470c60-3e53-4326-afda-6b9968e1dae0"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
+var element = $('#16470c60-3e53-4326-afda-6b9968e1dae0');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "8a820a72cead484aad183e9783b00588", "version_major": 2, "version_minor": 0}
+{"model_id": "9af97753bb104e079706f321cc4bcbcc", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
@@ -12611,39 +12667,6 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
 <pre>
 </pre>
 </div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">state_final</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">]</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[25]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>{&#39;gold&#39;: [157, 159], &#39;regular&#39;: [161, 162], &#39;silver&#39;: [158, 160, 163]}</pre>
-</div>
-
 </div>
 
 </div>
@@ -12702,14 +12725,16 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <th>type_client</th>
       <th>time_start_call</th>
       <th>client_max_waiting_time</th>
-      <th>client_missed</th>
-      <th>type_operator</th>
-      <th>client_priority</th>
+      <th>...</th>
       <th>operator_start_work_time</th>
       <th>priority_queue</th>
       <th>time_quque_from</th>
       <th>blocked</th>
       <th>queue_exit</th>
+      <th>type_block</th>
+      <th>time_from_block</th>
+      <th>duration</th>
+      <th>unblocked</th>
       <th>hour</th>
     </tr>
   </thead>
@@ -12717,115 +12742,126 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
     <tr>
       <th>0</th>
       <td>0.0</td>
-      <td>2</td>
+      <td>0</td>
       <td>0.0</td>
-      <td>2018-01-01 07:00:27</td>
+      <td>2018-01-01 07:00:05</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>1</td>
-      <td>silver</td>
-      <td>2018-01-01 07:00:27</td>
-      <td>300</td>
       <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
+      <td>regular</td>
+      <td>2018-01-01 07:00:05</td>
+      <td>300</td>
+      <td>...</td>
       <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:00:27</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:05</td>
       <td>False</td>
       <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
       <td>7</td>
     </tr>
     <tr>
       <th>1</th>
       <td>1.0</td>
-      <td>0</td>
+      <td>2</td>
       <td>1.0</td>
-      <td>2018-01-01 07:01:31</td>
+      <td>2018-01-01 07:00:12</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>3</td>
+      <td>1</td>
       <td>regular</td>
-      <td>2018-01-01 07:01:31</td>
+      <td>2018-01-01 07:00:12</td>
       <td>300</td>
-      <td>0</td>
-      <td>regular</td>
-      <td>3.0</td>
+      <td>...</td>
       <td>2018-01-01 07:00:00</td>
       <td>3</td>
-      <td>2018-01-01 07:01:31</td>
+      <td>2018-01-01 07:00:12</td>
       <td>False</td>
       <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
       <td>7</td>
     </tr>
     <tr>
       <th>2</th>
       <td>2.0</td>
-      <td>2</td>
+      <td>0</td>
       <td>0.0</td>
-      <td>2018-01-01 07:10:29</td>
+      <td>2018-01-01 07:10:07</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>22</td>
-      <td>silver</td>
-      <td>2018-01-01 07:07:08</td>
+      <td>17</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:30</td>
       <td>300</td>
-      <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
+      <td>...</td>
       <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:07:08</td>
+      <td>3</td>
+      <td>2018-01-01 07:05:30</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:31</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
     <tr>
       <th>3</th>
       <td>3.0</td>
-      <td>0</td>
+      <td>2</td>
       <td>1.0</td>
-      <td>2018-01-01 07:11:33</td>
+      <td>2018-01-01 07:10:14</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>19</td>
-      <td>regular</td>
-      <td>2018-01-01 07:06:37</td>
+      <td>18</td>
+      <td>silver</td>
+      <td>2018-01-01 07:05:41</td>
       <td>300</td>
-      <td>0</td>
-      <td>regular</td>
-      <td>3.0</td>
+      <td>...</td>
       <td>2018-01-01 07:00:00</td>
-      <td>3</td>
-      <td>2018-01-01 07:06:37</td>
+      <td>2</td>
+      <td>2018-01-01 07:05:41</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:05:41</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
     <tr>
       <th>4</th>
       <td>4.0</td>
-      <td>2</td>
+      <td>0</td>
       <td>0.0</td>
-      <td>2018-01-01 07:20:31</td>
+      <td>2018-01-01 07:20:09</td>
       <td>00:10:00</td>
       <td>True</td>
-      <td>51</td>
-      <td>silver</td>
-      <td>2018-01-01 07:17:42</td>
+      <td>46</td>
+      <td>regular</td>
+      <td>2018-01-01 07:15:27</td>
       <td>300</td>
-      <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
+      <td>...</td>
       <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:17:42</td>
+      <td>3</td>
+      <td>2018-01-01 07:15:27</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:15:28</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
   </tbody>
 </table>
+<p>5 rows × 23 columns</p>
 </div>
 </div>
 
@@ -12838,6 +12874,45 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[27]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Index([&#39;id_connection&#39;, &#39;id_operator&#39;, &#39;id_line&#39;, &#39;time_start_connection&#39;,
+       &#39;time_to_service&#39;, &#39;connection_closed&#39;, &#39;id_client&#39;, &#39;type_client&#39;,
+       &#39;time_start_call&#39;, &#39;client_max_waiting_time&#39;, &#39;client_missed&#39;,
+       &#39;type_operator&#39;, &#39;client_priority&#39;, &#39;operator_start_work_time&#39;,
+       &#39;priority_queue&#39;, &#39;time_quque_from&#39;, &#39;blocked&#39;, &#39;queue_exit&#39;,
+       &#39;type_block&#39;, &#39;time_from_block&#39;, &#39;duration&#39;, &#39;unblocked&#39;, &#39;hour&#39;],
+      dtype=&#39;object&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s1">&#39;time_start_call&#39;</span><span class="p">)</span>
@@ -12853,7 +12928,7 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[27]:</div>
+<div class="prompt output_prompt">Out[28]:</div>
 
 
 
@@ -12886,18 +12961,68 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <th>type_client</th>
       <th>time_start_call</th>
       <th>client_max_waiting_time</th>
-      <th>client_missed</th>
-      <th>type_operator</th>
-      <th>client_priority</th>
+      <th>...</th>
       <th>operator_start_work_time</th>
       <th>priority_queue</th>
       <th>time_quque_from</th>
       <th>blocked</th>
       <th>queue_exit</th>
+      <th>type_block</th>
+      <th>time_from_block</th>
+      <th>duration</th>
+      <th>unblocked</th>
       <th>hour</th>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>2018-01-01 07:00:05</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>0</td>
+      <td>regular</td>
+      <td>2018-01-01 07:00:05</td>
+      <td>300</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:05</td>
+      <td>False</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>1.0</td>
+      <td>2018-01-01 07:00:12</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>1</td>
+      <td>regular</td>
+      <td>2018-01-01 07:00:12</td>
+      <td>300</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:12</td>
+      <td>False</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>7</td>
+    </tr>
     <tr>
       <th>12</th>
       <td>NaN</td>
@@ -12906,39 +13031,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>0</td>
-      <td>gold</td>
-      <td>2018-01-01 07:00:26</td>
+      <td>2</td>
+      <td>silver</td>
+      <td>2018-01-01 07:00:18</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:00:26</td>
+      <td>2</td>
+      <td>2018-01-01 07:00:18</td>
       <td>False</td>
       <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>0</th>
-      <td>0.0</td>
-      <td>2</td>
-      <td>0.0</td>
-      <td>2018-01-01 07:00:27</td>
-      <td>00:10:00</td>
-      <td>True</td>
-      <td>1</td>
       <td>silver</td>
-      <td>2018-01-01 07:00:27</td>
-      <td>300</td>
-      <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
-      <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:00:27</td>
-      <td>False</td>
+      <td>2018-01-01 07:00:18</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -12950,39 +13055,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>2</td>
-      <td>gold</td>
-      <td>2018-01-01 07:01:06</td>
+      <td>3</td>
+      <td>regular</td>
+      <td>2018-01-01 07:00:25</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:01:06</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:25</td>
       <td>False</td>
       <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>1.0</td>
-      <td>0</td>
-      <td>1.0</td>
-      <td>2018-01-01 07:01:31</td>
-      <td>00:10:00</td>
-      <td>True</td>
-      <td>3</td>
       <td>regular</td>
-      <td>2018-01-01 07:01:31</td>
-      <td>300</td>
-      <td>0</td>
-      <td>regular</td>
-      <td>3.0</td>
-      <td>2018-01-01 07:00:00</td>
-      <td>3</td>
-      <td>2018-01-01 07:01:31</td>
-      <td>False</td>
+      <td>2018-01-01 07:00:26</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -12995,16 +13080,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>4</td>
-      <td>regular</td>
-      <td>2018-01-01 07:01:37</td>
+      <td>gold</td>
+      <td>2018-01-01 07:01:07</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:01:37</td>
+      <td>1</td>
+      <td>2018-01-01 07:01:07</td>
       <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:01:07</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13017,16 +13104,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>5</td>
-      <td>gold</td>
-      <td>2018-01-01 07:01:38</td>
+      <td>silver</td>
+      <td>2018-01-01 07:01:23</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:01:38</td>
+      <td>2</td>
+      <td>2018-01-01 07:01:23</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:01:23</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13040,15 +13129,17 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaN</td>
       <td>6</td>
       <td>gold</td>
-      <td>2018-01-01 07:02:20</td>
+      <td>2018-01-01 07:01:31</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
       <td>1</td>
-      <td>2018-01-01 07:02:20</td>
+      <td>2018-01-01 07:01:31</td>
       <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:01:31</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13061,38 +13152,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>7</td>
-      <td>silver</td>
-      <td>2018-01-01 07:02:46</td>
+      <td>gold</td>
+      <td>2018-01-01 07:02:05</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:02:46</td>
+      <td>1</td>
+      <td>2018-01-01 07:02:05</td>
       <td>False</td>
       <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>18</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>8</td>
-      <td>silver</td>
-      <td>2018-01-01 07:02:56</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:02:56</td>
-      <td>False</td>
+      <td>gold</td>
+      <td>2018-01-01 07:02:05</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13106,16 +13177,42 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaN</td>
       <td>9</td>
       <td>silver</td>
-      <td>2018-01-01 07:03:16</td>
+      <td>2018-01-01 07:02:29</td>
       <td>300</td>
-      <td>1</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:02:29</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:02:29</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:03:16</td>
-      <td>False</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>8</td>
+      <td>regular</td>
+      <td>2018-01-01 07:02:29</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:02:29</td>
       <td>True</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
       <td>7</td>
     </tr>
     <tr>
@@ -13127,16 +13224,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>10</td>
-      <td>gold</td>
-      <td>2018-01-01 07:03:25</td>
+      <td>regular</td>
+      <td>2018-01-01 07:03:04</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:03:25</td>
+      <td>3</td>
+      <td>2018-01-01 07:03:04</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:03:05</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13150,16 +13249,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaN</td>
       <td>11</td>
       <td>regular</td>
-      <td>2018-01-01 07:03:48</td>
+      <td>2018-01-01 07:03:21</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
       <td>3</td>
-      <td>2018-01-01 07:03:48</td>
-      <td>False</td>
+      <td>2018-01-01 07:03:21</td>
       <td>True</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
       <td>7</td>
     </tr>
     <tr>
@@ -13171,16 +13272,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>12</td>
-      <td>silver</td>
-      <td>2018-01-01 07:03:51</td>
+      <td>regular</td>
+      <td>2018-01-01 07:03:25</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:03:51</td>
+      <td>3</td>
+      <td>2018-01-01 07:03:25</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:03:26</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13193,16 +13296,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>13</td>
-      <td>gold</td>
-      <td>2018-01-01 07:04:10</td>
+      <td>silver</td>
+      <td>2018-01-01 07:03:36</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:04:10</td>
+      <td>2</td>
+      <td>2018-01-01 07:03:36</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:03:36</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13215,16 +13320,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>14</td>
-      <td>regular</td>
-      <td>2018-01-01 07:04:14</td>
+      <td>gold</td>
+      <td>2018-01-01 07:04:31</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:04:14</td>
+      <td>1</td>
+      <td>2018-01-01 07:04:31</td>
       <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:04:31</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13237,16 +13344,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>15</td>
-      <td>silver</td>
-      <td>2018-01-01 07:04:27</td>
+      <td>regular</td>
+      <td>2018-01-01 07:04:41</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:04:27</td>
+      <td>3</td>
+      <td>2018-01-01 07:04:41</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:04:42</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13259,16 +13368,66 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>16</td>
-      <td>gold</td>
-      <td>2018-01-01 07:05:13</td>
+      <td>silver</td>
+      <td>2018-01-01 07:04:46</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:05:13</td>
+      <td>2</td>
+      <td>2018-01-01 07:04:46</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:04:46</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2.0</td>
+      <td>0</td>
+      <td>0.0</td>
+      <td>2018-01-01 07:10:07</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>17</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:30</td>
+      <td>300</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:05:30</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:31</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3.0</td>
+      <td>2</td>
+      <td>1.0</td>
+      <td>2018-01-01 07:10:14</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>18</td>
+      <td>silver</td>
+      <td>2018-01-01 07:05:41</td>
+      <td>300</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>2</td>
+      <td>2018-01-01 07:05:41</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:05:41</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13280,17 +13439,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>17</td>
-      <td>gold</td>
-      <td>2018-01-01 07:05:50</td>
+      <td>19</td>
+      <td>regular</td>
+      <td>2018-01-01 07:06:07</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:05:50</td>
+      <td>3</td>
+      <td>2018-01-01 07:06:07</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:06:08</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13302,39 +13463,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>18</td>
-      <td>gold</td>
-      <td>2018-01-01 07:06:15</td>
+      <td>20</td>
+      <td>regular</td>
+      <td>2018-01-01 07:06:29</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:06:15</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>3.0</td>
-      <td>0</td>
-      <td>1.0</td>
-      <td>2018-01-01 07:11:33</td>
-      <td>00:10:00</td>
-      <td>True</td>
-      <td>19</td>
-      <td>regular</td>
-      <td>2018-01-01 07:06:37</td>
-      <td>300</td>
-      <td>0</td>
-      <td>regular</td>
-      <td>3.0</td>
-      <td>2018-01-01 07:00:00</td>
       <td>3</td>
-      <td>2018-01-01 07:06:37</td>
+      <td>2018-01-01 07:06:29</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:06:30</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13346,17 +13487,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>20</td>
-      <td>regular</td>
-      <td>2018-01-01 07:06:48</td>
+      <td>21</td>
+      <td>silver</td>
+      <td>2018-01-01 07:06:39</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:06:48</td>
+      <td>2</td>
+      <td>2018-01-01 07:06:39</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:06:39</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13368,39 +13511,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaT</td>
       <td>NaN</td>
-      <td>21</td>
+      <td>22</td>
       <td>regular</td>
-      <td>2018-01-01 07:07:01</td>
+      <td>2018-01-01 07:06:43</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
       <td>3</td>
-      <td>2018-01-01 07:07:01</td>
+      <td>2018-01-01 07:06:43</td>
       <td>False</td>
       <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2.0</td>
-      <td>2</td>
-      <td>0.0</td>
-      <td>2018-01-01 07:10:29</td>
-      <td>00:10:00</td>
-      <td>True</td>
-      <td>22</td>
-      <td>silver</td>
-      <td>2018-01-01 07:07:08</td>
-      <td>300</td>
-      <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
-      <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:07:08</td>
-      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:06:44</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13413,16 +13536,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>23</td>
-      <td>silver</td>
-      <td>2018-01-01 07:07:31</td>
+      <td>regular</td>
+      <td>2018-01-01 07:07:25</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:07:31</td>
+      <td>3</td>
+      <td>2018-01-01 07:07:25</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:07:26</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13436,15 +13561,17 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaN</td>
       <td>24</td>
       <td>silver</td>
-      <td>2018-01-01 07:07:40</td>
+      <td>2018-01-01 07:08:00</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
       <td>2</td>
-      <td>2018-01-01 07:07:40</td>
+      <td>2018-01-01 07:08:00</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:08:00</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13457,16 +13584,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>25</td>
-      <td>regular</td>
-      <td>2018-01-01 07:07:54</td>
+      <td>gold</td>
+      <td>2018-01-01 07:08:23</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:07:54</td>
+      <td>1</td>
+      <td>2018-01-01 07:08:23</td>
       <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:08:23</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13479,16 +13608,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>26</td>
-      <td>regular</td>
-      <td>2018-01-01 07:08:42</td>
+      <td>silver</td>
+      <td>2018-01-01 07:08:28</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:08:42</td>
+      <td>2</td>
+      <td>2018-01-01 07:08:28</td>
       <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:08:28</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13501,16 +13632,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>27</td>
-      <td>gold</td>
-      <td>2018-01-01 07:08:57</td>
+      <td>regular</td>
+      <td>2018-01-01 07:08:40</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:08:57</td>
+      <td>3</td>
+      <td>2018-01-01 07:08:40</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:08:41</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13523,16 +13656,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>28</td>
-      <td>gold</td>
-      <td>2018-01-01 07:09:02</td>
+      <td>regular</td>
+      <td>2018-01-01 07:09:14</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:09:02</td>
+      <td>3</td>
+      <td>2018-01-01 07:09:14</td>
       <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:09:15</td>
+      <td>00:00:07</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13545,16 +13680,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>29</td>
-      <td>silver</td>
-      <td>2018-01-01 07:09:25</td>
+      <td>gold</td>
+      <td>2018-01-01 07:09:35</td>
       <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:09:25</td>
+      <td>1</td>
+      <td>2018-01-01 07:09:35</td>
       <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:09:35</td>
+      <td>00:00:10</td>
       <td>True</td>
       <td>7</td>
     </tr>
@@ -13579,600 +13716,8 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>...</td>
       <td>...</td>
       <td>...</td>
-    </tr>
-    <tr>
-      <th>136</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>134</td>
-      <td>regular</td>
-      <td>2018-01-01 07:46:31</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:46:31</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>10.0</td>
-      <td>2</td>
-      <td>0.0</td>
-      <td>2018-01-01 07:50:37</td>
-      <td>00:10:00</td>
-      <td>False</td>
-      <td>135</td>
-      <td>silver</td>
-      <td>2018-01-01 07:46:36</td>
-      <td>300</td>
-      <td>0</td>
-      <td>silver</td>
-      <td>2.0</td>
-      <td>2018-01-01 07:00:00</td>
-      <td>2</td>
-      <td>2018-01-01 07:46:36</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>137</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>136</td>
-      <td>silver</td>
-      <td>2018-01-01 07:47:01</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:47:01</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>138</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>137</td>
-      <td>gold</td>
-      <td>2018-01-01 07:48:00</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:48:00</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>11.0</td>
-      <td>0</td>
-      <td>1.0</td>
-      <td>2018-01-01 07:51:41</td>
-      <td>00:10:00</td>
-      <td>False</td>
-      <td>138</td>
-      <td>regular</td>
-      <td>2018-01-01 07:48:21</td>
-      <td>300</td>
-      <td>0</td>
-      <td>regular</td>
-      <td>3.0</td>
-      <td>2018-01-01 07:00:00</td>
-      <td>3</td>
-      <td>2018-01-01 07:48:21</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>139</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>139</td>
-      <td>gold</td>
-      <td>2018-01-01 07:49:08</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:49:08</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>140</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>140</td>
-      <td>gold</td>
-      <td>2018-01-01 07:50:16</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:50:16</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>141</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>141</td>
-      <td>regular</td>
-      <td>2018-01-01 07:50:50</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:50:50</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>142</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>142</td>
-      <td>gold</td>
-      <td>2018-01-01 07:51:11</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:51:11</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>143</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>143</td>
-      <td>regular</td>
-      <td>2018-01-01 07:51:14</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:51:14</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>144</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>144</td>
-      <td>gold</td>
-      <td>2018-01-01 07:51:26</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:51:26</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>145</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>145</td>
-      <td>regular</td>
-      <td>2018-01-01 07:51:31</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:51:31</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>146</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>146</td>
-      <td>regular</td>
-      <td>2018-01-01 07:51:38</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:51:38</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>147</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>147</td>
-      <td>regular</td>
-      <td>2018-01-01 07:52:14</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:52:14</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>148</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>148</td>
-      <td>silver</td>
-      <td>2018-01-01 07:52:24</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:52:24</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>149</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>149</td>
-      <td>gold</td>
-      <td>2018-01-01 07:52:28</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:52:28</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>150</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>150</td>
-      <td>regular</td>
-      <td>2018-01-01 07:52:46</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:52:46</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>151</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>151</td>
-      <td>silver</td>
-      <td>2018-01-01 07:52:49</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:52:49</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>152</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>152</td>
-      <td>regular</td>
-      <td>2018-01-01 07:54:27</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:54:27</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>153</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>153</td>
-      <td>silver</td>
-      <td>2018-01-01 07:54:27</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:54:27</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>154</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>154</td>
-      <td>silver</td>
-      <td>2018-01-01 07:54:41</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:54:41</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>155</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>155</td>
-      <td>silver</td>
-      <td>2018-01-01 07:54:49</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:54:49</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>156</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>156</td>
-      <td>silver</td>
-      <td>2018-01-01 07:54:50</td>
-      <td>300</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:54:50</td>
-      <td>False</td>
-      <td>True</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>157</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>157</td>
-      <td>gold</td>
-      <td>2018-01-01 07:55:05</td>
-      <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:55:05</td>
-      <td>False</td>
-      <td>False</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>158</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>158</td>
-      <td>silver</td>
-      <td>2018-01-01 07:55:28</td>
-      <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:55:28</td>
-      <td>False</td>
-      <td>False</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>159</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>159</td>
-      <td>gold</td>
-      <td>2018-01-01 07:55:32</td>
-      <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>1</td>
-      <td>2018-01-01 07:55:32</td>
-      <td>False</td>
-      <td>False</td>
-      <td>7</td>
-    </tr>
-    <tr>
-      <th>160</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>NaT</td>
-      <td>NaN</td>
-      <td>160</td>
-      <td>silver</td>
-      <td>2018-01-01 07:55:46</td>
-      <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaT</td>
-      <td>2</td>
-      <td>2018-01-01 07:55:46</td>
-      <td>False</td>
-      <td>False</td>
-      <td>7</td>
+      <td>...</td>
+      <td>...</td>
     </tr>
     <tr>
       <th>161</th>
@@ -14184,16 +13729,18 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaN</td>
       <td>161</td>
       <td>regular</td>
-      <td>2018-01-01 07:56:25</td>
+      <td>2018-01-01 07:50:01</td>
       <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
       <td>3</td>
-      <td>2018-01-01 07:56:25</td>
-      <td>False</td>
-      <td>False</td>
+      <td>2018-01-01 07:50:01</td>
+      <td>True</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
       <td>7</td>
     </tr>
     <tr>
@@ -14205,17 +13752,19 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>162</td>
-      <td>regular</td>
-      <td>2018-01-01 07:57:08</td>
+      <td>silver</td>
+      <td>2018-01-01 07:50:20</td>
       <td>300</td>
-      <td>0</td>
-      <td>NaN</td>
-      <td>NaN</td>
+      <td>...</td>
       <td>NaT</td>
-      <td>3</td>
-      <td>2018-01-01 07:57:08</td>
+      <td>2</td>
+      <td>2018-01-01 07:50:20</td>
       <td>False</td>
-      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:50:20</td>
+      <td>00:00:10</td>
+      <td>True</td>
       <td>7</td>
     </tr>
     <tr>
@@ -14227,22 +13776,672 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
       <td>NaT</td>
       <td>NaN</td>
       <td>163</td>
-      <td>silver</td>
-      <td>2018-01-01 07:57:17</td>
+      <td>regular</td>
+      <td>2018-01-01 07:50:32</td>
       <td>300</td>
-      <td>0</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:50:32</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:50:33</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>164</th>
+      <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>164</td>
+      <td>silver</td>
+      <td>2018-01-01 07:50:52</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
       <td>2</td>
-      <td>2018-01-01 07:57:17</td>
+      <td>2018-01-01 07:50:52</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:50:52</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>165</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>165</td>
+      <td>gold</td>
+      <td>2018-01-01 07:50:58</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>1</td>
+      <td>2018-01-01 07:50:58</td>
+      <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:50:58</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>166</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>166</td>
+      <td>silver</td>
+      <td>2018-01-01 07:51:17</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:51:17</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:51:17</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>167</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>167</td>
+      <td>regular</td>
+      <td>2018-01-01 07:51:28</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:51:28</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:51:29</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>168</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>168</td>
+      <td>regular</td>
+      <td>2018-01-01 07:51:37</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:51:37</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:51:38</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>169</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>169</td>
+      <td>regular</td>
+      <td>2018-01-01 07:52:18</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:52:18</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:52:19</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>170</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>170</td>
+      <td>regular</td>
+      <td>2018-01-01 07:52:54</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:52:54</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:52:55</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>171</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>171</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:00</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:53:00</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:01</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>172</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>172</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:17</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:53:17</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:18</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>173</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>173</td>
+      <td>silver</td>
+      <td>2018-01-01 07:53:33</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:53:33</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:53:33</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>174</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>174</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:49</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:53:49</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:53:50</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>175</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>175</td>
+      <td>gold</td>
+      <td>2018-01-01 07:54:43</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>1</td>
+      <td>2018-01-01 07:54:43</td>
+      <td>False</td>
+      <td>True</td>
+      <td>gold</td>
+      <td>2018-01-01 07:54:43</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>176</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>176</td>
+      <td>regular</td>
+      <td>2018-01-01 07:54:52</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:54:52</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:54:53</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>177</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>177</td>
+      <td>silver</td>
+      <td>2018-01-01 07:54:55</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:54:55</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:54:55</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>178</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>178</td>
+      <td>silver</td>
+      <td>2018-01-01 07:55:45</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:55:45</td>
       <td>False</td>
       <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:55:45</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>179</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>179</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:01</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:56:01</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:02</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>180</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>180</td>
+      <td>silver</td>
+      <td>2018-01-01 07:56:15</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:56:15</td>
+      <td>False</td>
+      <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:56:15</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>181</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>181</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:28</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:56:28</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:29</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>182</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>182</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:30</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:56:30</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:56:31</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>183</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>183</td>
+      <td>silver</td>
+      <td>2018-01-01 07:56:31</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:56:31</td>
+      <td>False</td>
+      <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:56:31</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>184</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>184</td>
+      <td>silver</td>
+      <td>2018-01-01 07:57:38</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:57:38</td>
+      <td>False</td>
+      <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:57:38</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>185</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>185</td>
+      <td>regular</td>
+      <td>2018-01-01 07:58:16</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:58:16</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:58:17</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>186</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>186</td>
+      <td>gold</td>
+      <td>2018-01-01 07:58:19</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>1</td>
+      <td>2018-01-01 07:58:19</td>
+      <td>False</td>
+      <td>False</td>
+      <td>gold</td>
+      <td>2018-01-01 07:58:19</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>187</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>187</td>
+      <td>regular</td>
+      <td>2018-01-01 07:59:00</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:59:00</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:59:01</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>188</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>188</td>
+      <td>silver</td>
+      <td>2018-01-01 07:59:05</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:59:05</td>
+      <td>False</td>
+      <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:59:05</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>189</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>189</td>
+      <td>silver</td>
+      <td>2018-01-01 07:59:23</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>2</td>
+      <td>2018-01-01 07:59:23</td>
+      <td>False</td>
+      <td>False</td>
+      <td>silver</td>
+      <td>2018-01-01 07:59:23</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>190</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>190</td>
+      <td>regular</td>
+      <td>2018-01-01 07:59:26</td>
+      <td>300</td>
+      <td>...</td>
+      <td>NaT</td>
+      <td>3</td>
+      <td>2018-01-01 07:59:26</td>
+      <td>False</td>
+      <td>False</td>
+      <td>regular</td>
+      <td>2018-01-01 07:59:27</td>
+      <td>00:00:07</td>
+      <td>True</td>
       <td>7</td>
     </tr>
   </tbody>
 </table>
-<p>164 rows × 19 columns</p>
+<p>191 rows × 23 columns</p>
 </div>
 </div>
 
@@ -14254,7 +14453,7 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[28]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type_operator&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
@@ -14270,14 +14469,14 @@ var element = $('#4fcc5a8a-0214-4ef9-80fa-189fba7ee346');
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[28]:</div>
+<div class="prompt output_prompt">Out[29]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>silver     6
-regular    6
+<pre>regular    6
+silver     6
 Name: type_operator, dtype: int64</pre>
 </div>
 
@@ -14289,7 +14488,7 @@ Name: type_operator, dtype: int64</pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[29]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type_client&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;client_missed&#39;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">([</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span><span class="s1">&#39;silver&#39;</span><span class="p">,</span><span class="s1">&#39;regular&#39;</span><span class="p">])</span>
@@ -14316,143 +14515,143 @@ Name: type_operator, dtype: int64</pre>
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,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
-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
-mfA84+8AAAAASUVORK5CYII=
+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
++4esOBvX/AAAAABJRU5ErkJggg==
 "
 >
 </div>
@@ -14465,7 +14664,7 @@ mfA84+8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">line_loads_ds</span> <span class="o">=</span> <span class="n">get_line_loads</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">time_to</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
@@ -14478,7 +14677,7 @@ mfA84+8AAAAASUVORK5CYII=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[31]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">line_loads_ds</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -14503,173 +14702,152 @@ mfA84+8AAAAASUVORK5CYII=
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,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
-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
+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
 "
 >
 </div>
@@ -14682,7 +14860,7 @@ RKQCDHsiIhVg2BMRqcD/B5LNhZNBLARyAAAAAElFTkSuQmCC
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[32]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;type_operator&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;type_client&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;id_connection&#39;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
@@ -14708,157 +14886,156 @@ RKQCDHsiIhVg2BMRqcD/B5LNhZNBLARyAAAAAElFTkSuQmCC
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,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
-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
+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
 "
 >
 </div>
@@ -14890,7 +15067,7 @@ MCETEUkEEzIRkUQwIRMRScT/Adt3iTgYiMxzAAAAAElFTkSuQmCC
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Начальные задержки для каждого звонка</p>
+<p>Разные типы звонков</p>
 
 </div>
 </div>
@@ -14899,7 +15076,7 @@ MCETEUkEEzIRkUQwIRMRScT/Adt3iTgYiMxzAAAAAElFTkSuQmCC
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Разные типы звонков</p>
+<p>Случайный начальные задержки для каждого звонка</p>
 
 </div>
 </div>
