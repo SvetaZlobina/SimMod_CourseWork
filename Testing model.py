@@ -91,7 +91,7 @@ def get_panel(system, state):
     return ds
 
 
-# In[8]:
+# In[37]:
 
 
 def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(19,0)):
@@ -113,7 +113,28 @@ def get_line_loads(panel_ds, time_from=get_datetime(7,0), time_to=get_datetime(1
     return line_loads_ds
 
 
-# In[9]:
+# In[38]:
+
+
+def estimate_time_to_wait(system, state, cl_id):
+    cl = state['clients_ds'].loc[cl_id]
+    mean_time_in_work = {k:datetime.timedelta(seconds=system['time_to_serve']) for k in ['regular', 'silver','gold']}
+    
+    queue_clients = state['waiting_clients'][cl['type']]
+    queue_clients = len(queue_clients)
+    available_ops = system['operators_ds'][system['operators_ds']['type']==cl['type']]
+    available_ops = available_ops[(available_ops['start_work_time']<=state['time_cur'])&
+                                 (state['time_cur']<=available_ops['start_work_time']+system['operators_work_duration'])]
+    available_ops = len(available_ops)
+    
+    if available_ops==0:
+        time_to_wait = np.inf
+    else:
+        time_to_wait = (queue_clients*mean_time_in_work[cl['type']]).seconds/available_ops
+    return time_to_wait
+
+
+# In[10]:
 
 
 def add_operator(type_, start_work_time, ds):
@@ -127,7 +148,7 @@ def add_operators(ar, ds):
 
 # Заданные значения частот звонков разных клиентов
 
-# In[10]:
+# In[11]:
 
 
 calls_stat_ds = pd.DataFrame()
@@ -142,7 +163,7 @@ print('Частота звонков')
 calls_stat_ds
 
 
-# In[11]:
+# In[12]:
 
 
 operators_ds = pd.DataFrame(columns=['id', 'type', 'priority','start_work_time'])
@@ -159,7 +180,7 @@ for i in range(50):
     add_operator('regular', get_datetime(7,0), operators_ds)
 # # Модель 1
 
-# In[12]:
+# In[13]:
 
 
 def init_state(system):
@@ -169,7 +190,7 @@ def init_state(system):
     state = {
         'time_cur': system['time_start'],  # Текущее время
         # Данные по всем клиентам
-        'clients_ds': pd.DataFrame(columns=['id','line_id','type','call_start_time', 'call_end_time', 'max_waiting_time', 'missed']),
+        'clients_ds': pd.DataFrame(columns=['id','line_id','type','call_start_time', 'call_end_time', 'max_waiting_time', 'missed', 'status']),
         # Данные по всем соединениям операторов с клиентами
         'connections_ds': pd.DataFrame(columns=['id', 'operator_id', 'client_id', 'time_start','time_to_service', 'closed']),
         # Очередь клиентов на соединение
@@ -201,7 +222,7 @@ def init_state(system):
     return state
 
 
-# In[13]:
+# In[14]:
 
 
 def generate_clients(system, state):
@@ -222,14 +243,16 @@ def generate_clients(system, state):
                 'call_start_time':state['time_cur'],
                 'call_end_time': None,
                 'max_waiting_time':300,  # seconds  # временная константа 
-                'missed':False}  # повесил-ли клиент трубку
+                'missed':False,
+                'status':'Generated'}  # повесил-ли клиент трубку
         if line_id is None:
             data['missed'] = True
             data['call_end_time'] = state['time_cur']
+            data['status'] = 'No_lines_available'
         state['clients_ds'].loc[data['id']] = data
 
 
-# In[14]:
+# In[15]:
 
 
 def add_clients_to_queue(state):
@@ -246,9 +269,10 @@ def add_clients_to_queue(state):
                 'exit': False}
         state['queue_ds'].loc[row['id']] = data
         state['waiting_clients'][row['type']].append(row['id'])
+    state['clients_ds'].loc[new_clients['id'], 'status'] = 'Add_to_queue'
 
 
-# In[15]:
+# In[16]:
 
 
 def drop_clients_from_queue(state):
@@ -259,9 +283,9 @@ def drop_clients_from_queue(state):
     
     cds = cds[cds['exit']==False]
     cds = cds[cds['blocked']==False]
-    missed = cds.loc[([x.seconds for x in state['time_cur']-cds['time_from']]>cds['max_waiting_time'])]
+    #missed = cds.loc[([x.seconds for x in state['time_cur']-cds['time_from']]>cds['max_waiting_time'])]
+    missed = cds.loc[state['time_cur']-cds['time_from']>system['very_long_waiting']]
     if len(missed)>0:
-
         state['queue_ds'].loc[missed['client_id'], 'exit'] = True
         # Запись, что клиент бросил трубку
         state['clients_ds'].loc[missed['client_id'], 'missed'] = True
@@ -272,9 +296,10 @@ def drop_clients_from_queue(state):
                 if row['client_id'] in state[ds][row['type']]:
                     state[ds][row['type']].remove(row['client_id'])
             state['free_lines'].append(row['line_id'])
+        state['clients_ds'].loc[missed['client_id'], 'status'] = 'Dropped_from_queue'
 
 
-# In[16]:
+# In[17]:
 
 
 def block_clients_in_queue_regular(state):
@@ -292,6 +317,7 @@ def block_clients_in_queue_regular(state):
                 if i in state[q]['regular']:
                     state[q]['regular'].remove(i)
             state['free_lines'].append(state['clients_ds'].at[i,'line_id'])
+            state['clients_ds'].at[i, 'status'] = 'Dropped_on_block'
         else:
             data = {'client_id':i,
                 'type':'regular',
@@ -303,9 +329,10 @@ def block_clients_in_queue_regular(state):
             if i in state['waiting_clients']['regular']:
                 state['blocked_clients']['regular'].append(i)
                 state['waiting_clients']['regular'].remove(i)
+            state['clients_ds'].at[i, 'status'] = "Blocked"
 
 
-# In[17]:
+# In[18]:
 
 
 def block_clients_in_queue_vip(state):
@@ -325,18 +352,42 @@ def block_clients_in_queue_vip(state):
         state['blocked_ds'].loc[len(state['blocked_ds'])] = data
         if i in state['waiting_clients'][t]:
             state['waiting_clients'][t].remove(i)
-            state['blocked_clients'][t].append(i)
+        state['blocked_clients'][t].append(i)
+    state['clients_ds'].loc[cds['client_id'], 'status'] = 'Blocked'
 
 
-# In[18]:
+# In[19]:
 
 
 def block_clients_in_queue(state):  
     block_clients_in_queue_regular(state)
     block_clients_in_queue_vip(state)
 
-
-# In[19]:
+def unblock_clients_in_queue(state):
+    cds = state['blocked_ds']
+    cds = cds[cds['unblocked']==False]
+    cds = cds[state['time_cur']>cds['time_from']+cds['duration']]
+    
+    state['blocked_ds'].loc[cds.index, 'unblocked'] = True
+    state['queue_ds'].loc[cds['client_id'], 'blocked'] = False
+    items = state['blocked_clients'].items()
+    for t, blocked_ids in items:
+        for i in blocked_ids:
+            time_to_wait = estimate_time_to_wait(system, state, i)
+            if time_to_wait<=state['clients_ds'].at[i,'max_waiting_time']:
+                state['blocked_clients'][t].remove(i)
+                state['waiting_clients'][t].append(i)
+                state['clients_ds'].at[i, 'status'] = 'Unblocked'
+            else:
+                state['queue_ds'].at[i, 'exit'] = True
+                state['clients_ds'].at[i, 'missed'] = True
+                state['clients_ds'].at[i, 'call_end_time'] = state['time_cur']
+                for q in ['waiting_clients', 'blocked_clients']:
+                    if i in state[q][t]:
+                        state[q][t].remove(i)
+                state['free_lines'].append(state['clients_ds'].at[i,'line_id'])
+                state['clients_ds'].at[i, 'status'] = 'Dropped_on_unblock'
+# In[20]:
 
 
 def unblock_clients_in_queue(state):
@@ -345,14 +396,27 @@ def unblock_clients_in_queue(state):
     cds = cds[state['time_cur']>cds['time_from']+cds['duration']]
     
     state['blocked_ds'].loc[cds.index, 'unblocked'] = True
-    state['queue_ds'].loc[state['queue_ds']['client_id'].isin(cds['client_id']), 'blocked'] = False
-    for t, blocked_ids in state['blocked_clients'].items():
-        for i in blocked_ids:
+    state['queue_ds'].loc[cds['client_id'], 'blocked'] = False
+    for idx, row in cds.iterrows():
+        i = row['client_id']
+        t = state['clients_ds'].at[i, 'type']
+        time_to_wait = estimate_time_to_wait(system, state, i)
+        if time_to_wait<=state['clients_ds'].at[i,'max_waiting_time']:
             state['blocked_clients'][t].remove(i)
             state['waiting_clients'][t].append(i)
+            state['clients_ds'].at[i, 'status'] = 'Unblocked'
+        else:
+            state['queue_ds'].at[i, 'exit'] = True
+            state['clients_ds'].at[i, 'missed'] = True
+            state['clients_ds'].at[i, 'call_end_time'] = state['time_cur']
+            for q in ['waiting_clients', 'blocked_clients']:
+                if i in state[q][t]:
+                    state[q][t].remove(i)
+            state['free_lines'].append(state['clients_ds'].at[i,'line_id'])
+            state['clients_ds'].at[i, 'status'] = 'Dropped_on_unblock'
 
 
-# In[20]:
+# In[21]:
 
 
 def generate_operators(system, state):
@@ -362,7 +426,7 @@ def generate_operators(system, state):
             state['free_operators'][row['type']].append(row['id'])
 
 
-# In[21]:
+# In[22]:
 
 
 def drop_operators(system, state):
@@ -373,7 +437,7 @@ def drop_operators(system, state):
             state['free_operators'][t].remove(i)
 
 
-# In[22]:
+# In[23]:
 
 
 def occupy_operators(system, state):
@@ -405,10 +469,11 @@ def occupy_operators(system, state):
                 }
             state['connections_ds'] = state['connections_ds'].append(data, ignore_index=True)
             state['queue_ds'].at[cl_id,'exit'] = True 
+            state['clients_ds'].at[cl_id, 'status'] = 'Connected'
     return
 
 
-# In[23]:
+# In[24]:
 
 
 def release_operators(system, state):
@@ -424,17 +489,18 @@ def release_operators(system, state):
             state['free_operators'][system['operators_ds'].at[row['operator_id'],'type']].append(row['operator_id'])
             state['free_lines'].append(state['clients_ds'].at[row['client_id'],'line_id'])
         state['free_lines'] = sorted(state['free_lines'])
+        state['clients_ds'].loc[ended_connections['client_id'], 'status'] = 'Disconnected_success'
     return ended_connections
 
 
-# In[24]:
+# In[25]:
 
 
 def step(system, state):        
     """
     Один временной шаг системы
     """
-    generate_clients(system, state)
+    generate_clients(system, state)ффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффф
     add_clients_to_queue(state)
     block_clients_in_queue(state)
     unblock_clients_in_queue(state)
@@ -449,7 +515,13 @@ def step(system, state):
     drop_clients_from_queue(state)
 
 
-# In[25]:
+# In[26]:
+
+
+from numba import jit
+
+
+# In[27]:
 
 
 def run_simulation(system):
@@ -478,7 +550,7 @@ def run_simulation(system):
     return results_frame, state
 
 
-# In[ ]:
+# In[28]:
 
 
 system =  {'time_start': get_datetime(7,0),
@@ -491,24 +563,25 @@ system =  {'time_start': get_datetime(7,0),
             'client_types': ['regular', 'silver', 'gold'],  # типы клиентов. затем добавятся silver и gold
             'operators_ds': operators_ds,
             'operators_work_duration': datetime.timedelta(hours=8),
-            'n_lines_vip': 5
+            'n_lines_vip': 5,
+            'very_long_waiting': datetime.timedelta(minutes=30)
          }
 
 
-# In[ ]:
+# In[29]:
 
 
 results, state_final = run_simulation(system)
 
 
-# In[ ]:
+# In[30]:
 
 
 ds = get_panel(system, state_final)
 ds.head()
 
 
-# In[ ]:
+# In[31]:
 
 
 tt = ds.pivot_table(columns=['hour'], index=['type_client'], values='client_missed', aggfunc='mean').reindex(
@@ -518,20 +591,29 @@ del tt
 plt.show()
 
 
-# In[ ]:
+# In[32]:
 
 
 line_loads_ds = get_line_loads(ds, time_to=get_datetime(8,0))
 
 
-# In[ ]:
+# In[33]:
+
+
+ds[(ds['type_client']=='silver')&(ds['status']!='Dropped_on_unblock')][[
+    'time_start_connection','id_client','type_client','time_start_call','time_end_call',
+    'status', 'client_max_waiting_time', 'time_from_block','block_duration'
+]]
+
+
+# In[34]:
 
 
 (line_loads_ds>0).sum(1).fillna(0).plot()
 plt.show()
 
 
-# In[ ]:
+# In[35]:
 
 
 sns.heatmap(ds.pivot_table(index='type_operator', columns='type_client', values='id_connection', aggfunc='count', fill_value=0),
@@ -540,8 +622,6 @@ plt.show()
 
 
 # # Что ещё надо добавить
-
-# Оценка времени ожидания клиента
 
 # Разные типы звонков
 

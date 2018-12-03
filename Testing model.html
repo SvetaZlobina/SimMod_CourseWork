@@ -11918,7 +11918,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_line_loads</span><span class="p">(</span><span class="n">panel_ds</span><span class="p">,</span> <span class="n">time_from</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">time_to</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">0</span><span class="p">)):</span>
@@ -11947,7 +11947,35 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">estimate_time_to_wait</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">cl_id</span><span class="p">):</span>
+    <span class="n">cl</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cl_id</span><span class="p">]</span>
+    <span class="n">mean_time_in_work</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;time_to_serve&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="s1">&#39;silver&#39;</span><span class="p">,</span><span class="s1">&#39;gold&#39;</span><span class="p">]}</span>
+    
+    <span class="n">queue_clients</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">cl</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+    <span class="n">queue_clients</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">queue_clients</span><span class="p">)</span>
+    <span class="n">available_ops</span> <span class="o">=</span> <span class="n">system</span><span class="p">[</span><span class="s1">&#39;operators_ds&#39;</span><span class="p">][</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;operators_ds&#39;</span><span class="p">][</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">cl</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span>
+    <span class="n">available_ops</span> <span class="o">=</span> <span class="n">available_ops</span><span class="p">[(</span><span class="n">available_ops</span><span class="p">[</span><span class="s1">&#39;start_work_time&#39;</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">])</span><span class="o">&amp;</span>
+                                 <span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">available_ops</span><span class="p">[</span><span class="s1">&#39;start_work_time&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;operators_work_duration&#39;</span><span class="p">])]</span>
+    <span class="n">available_ops</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">available_ops</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">available_ops</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">time_to_wait</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">time_to_wait</span> <span class="o">=</span> <span class="p">(</span><span class="n">queue_clients</span><span class="o">*</span><span class="n">mean_time_in_work</span><span class="p">[</span><span class="n">cl</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]])</span><span class="o">.</span><span class="n">seconds</span><span class="o">/</span><span class="n">available_ops</span>
+    <span class="k">return</span> <span class="n">time_to_wait</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">add_operator</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">start_work_time</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
@@ -11981,7 +12009,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">calls_stat_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
@@ -12017,7 +12045,7 @@ div#notebook {
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[10]:</div>
+<div class="prompt output_prompt">Out[11]:</div>
 
 
 
@@ -12196,7 +12224,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">operators_ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;priority&#39;</span><span class="p">,</span><span class="s1">&#39;start_work_time&#39;</span><span class="p">])</span>
@@ -12226,7 +12254,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">init_state</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
@@ -12236,7 +12264,7 @@ div#notebook {
     <span class="n">state</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;time_cur&#39;</span><span class="p">:</span> <span class="n">system</span><span class="p">[</span><span class="s1">&#39;time_start&#39;</span><span class="p">],</span>  <span class="c1"># Текущее время</span>
         <span class="c1"># Данные по всем клиентам</span>
-        <span class="s1">&#39;clients_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;call_start_time&#39;</span><span class="p">,</span> <span class="s1">&#39;call_end_time&#39;</span><span class="p">,</span> <span class="s1">&#39;max_waiting_time&#39;</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">]),</span>
+        <span class="s1">&#39;clients_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">,</span><span class="s1">&#39;type&#39;</span><span class="p">,</span><span class="s1">&#39;call_start_time&#39;</span><span class="p">,</span> <span class="s1">&#39;call_end_time&#39;</span><span class="p">,</span> <span class="s1">&#39;max_waiting_time&#39;</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]),</span>
         <span class="c1"># Данные по всем соединениям операторов с клиентами</span>
         <span class="s1">&#39;connections_ds&#39;</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;operator_id&#39;</span><span class="p">,</span> <span class="s1">&#39;client_id&#39;</span><span class="p">,</span> <span class="s1">&#39;time_start&#39;</span><span class="p">,</span><span class="s1">&#39;time_to_service&#39;</span><span class="p">,</span> <span class="s1">&#39;closed&#39;</span><span class="p">]),</span>
         <span class="c1"># Очередь клиентов на соединение</span>
@@ -12275,7 +12303,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_clients</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12296,10 +12324,12 @@ div#notebook {
                 <span class="s1">&#39;call_start_time&#39;</span><span class="p">:</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">],</span>
                 <span class="s1">&#39;call_end_time&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="s1">&#39;max_waiting_time&#39;</span><span class="p">:</span><span class="mi">300</span><span class="p">,</span>  <span class="c1"># seconds  # временная константа </span>
-                <span class="s1">&#39;missed&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">}</span>  <span class="c1"># повесил-ли клиент трубку</span>
+                <span class="s1">&#39;missed&#39;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span>
+                <span class="s1">&#39;status&#39;</span><span class="p">:</span><span class="s1">&#39;Generated&#39;</span><span class="p">}</span>  <span class="c1"># повесил-ли клиент трубку</span>
         <span class="k">if</span> <span class="n">line_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">data</span><span class="p">[</span><span class="s1">&#39;call_end_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;No_lines_available&#39;</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span>
 </pre></div>
 
@@ -12310,7 +12340,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">add_clients_to_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
@@ -12327,39 +12357,7 @@ div#notebook {
                 <span class="s1">&#39;exit&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_clients_from_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Моделирование &quot;бросания трубки&quot; недождавшихся клиентов</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">],</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
-    
-    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;exit&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
-    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;blocked&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
-    <span class="n">missed</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">loc</span><span class="p">[([</span><span class="n">x</span><span class="o">.</span><span class="n">seconds</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]]</span><span class="o">&gt;</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;max_waiting_time&#39;</span><span class="p">])]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missed</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
-
-        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="c1"># Запись, что клиент бросил трубку</span>
-        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;call_end_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span>
-        <span class="c1"># Удаление клиента из очереди, оптимизирующей расчёты</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">missed</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
-            <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked_clients&#39;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]:</span>
-                    <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">])</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;line_id&#39;</span><span class="p">])</span>
+    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_clients</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">],</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Add_to_queue&#39;</span>
 </pre></div>
 
 </div>
@@ -12370,6 +12368,40 @@ div#notebook {
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_clients_from_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Моделирование &quot;бросания трубки&quot; недождавшихся клиентов</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">],</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">],</span> <span class="n">left_on</span><span class="o">=</span><span class="s1">&#39;client_id&#39;</span><span class="p">,</span><span class="n">right_on</span><span class="o">=</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+    
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;exit&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
+    <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;blocked&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
+    <span class="c1">#missed = cds.loc[([x.seconds for x in state[&#39;time_cur&#39;]-cds[&#39;time_from&#39;]]&gt;cds[&#39;max_waiting_time&#39;])]</span>
+    <span class="n">missed</span> <span class="o">=</span> <span class="n">cds</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;very_long_waiting&#39;</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">missed</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Запись, что клиент бросил трубку</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;call_end_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span>
+        <span class="c1"># Удаление клиента из очереди, оптимизирующей расчёты</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">missed</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">ds</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked_clients&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]:</span>
+                    <span class="n">state</span><span class="p">[</span><span class="n">ds</span><span class="p">][</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">])</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;line_id&#39;</span><span class="p">])</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">missed</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Dropped_from_queue&#39;</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">block_clients_in_queue_regular</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
@@ -12387,6 +12419,7 @@ div#notebook {
                 <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="n">q</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]:</span>
                     <span class="n">state</span><span class="p">[</span><span class="n">q</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">])</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Dropped_on_block&#39;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;client_id&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
                 <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span>
@@ -12398,6 +12431,7 @@ div#notebook {
             <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]:</span>
                 <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="s1">&#39;regular&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Blocked&quot;</span>
 </pre></div>
 
 </div>
@@ -12407,7 +12441,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">block_clients_in_queue_vip</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
@@ -12427,22 +12461,8 @@ div#notebook {
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">])]</span> <span class="o">=</span> <span class="n">data</span>
         <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]:</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">block_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>  
-    <span class="n">block_clients_in_queue_regular</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-    <span class="n">block_clients_in_queue_vip</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Blocked&#39;</span>
 </pre></div>
 
 </div>
@@ -12455,17 +12475,68 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">block_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>  
+    <span class="n">block_clients_in_queue_regular</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="n">block_clients_in_queue_vip</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>def unblock_clients_in_queue(state):
+    cds = state['blocked_ds']
+    cds = cds[cds['unblocked']==False]
+    cds = cds[state['time_cur']>cds['time_from']+cds['duration']]
+    
+    state['blocked_ds'].loc[cds.index, 'unblocked'] = True
+    state['queue_ds'].loc[cds['client_id'], 'blocked'] = False
+    items = state['blocked_clients'].items()
+    for t, blocked_ids in items:
+        for i in blocked_ids:
+            time_to_wait = estimate_time_to_wait(system, state, i)
+            if time_to_wait<=state['clients_ds'].at[i,'max_waiting_time']:
+                state['blocked_clients'][t].remove(i)
+                state['waiting_clients'][t].append(i)
+                state['clients_ds'].at[i, 'status'] = 'Unblocked'
+            else:
+                state['queue_ds'].at[i, 'exit'] = True
+                state['clients_ds'].at[i, 'missed'] = True
+                state['clients_ds'].at[i, 'call_end_time'] = state['time_cur']
+                for q in ['waiting_clients', 'blocked_clients']:
+                    if i in state[q][t]:
+                        state[q][t].remove(i)
+                state['free_lines'].append(state['clients_ds'].at[i,'line_id'])
+                state['clients_ds'].at[i, 'status'] = 'Dropped_on_unblock'
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="inner_cell">
+    <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">unblock_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
     <span class="n">cds</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span>
     <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;unblocked&#39;</span><span class="p">]</span><span class="o">==</span><span class="kc">False</span><span class="p">]</span>
     <span class="n">cds</span> <span class="o">=</span> <span class="n">cds</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span><span class="o">&gt;</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;time_from&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]]</span>
     
     <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s1">&#39;unblocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">][</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]),</span> <span class="s1">&#39;blocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">blocked_ids</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">blocked_ids</span><span class="p">:</span>
+    <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cds</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;blocked&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">cds</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span>
+        <span class="n">time_to_wait</span> <span class="o">=</span> <span class="n">estimate_time_to_wait</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">time_to_wait</span><span class="o">&lt;=</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;max_waiting_time&#39;</span><span class="p">]:</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;blocked_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Unblocked&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;missed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;call_end_time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;time_cur&#39;</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;waiting_clients&#39;</span><span class="p">,</span> <span class="s1">&#39;blocked_clients&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">state</span><span class="p">[</span><span class="n">q</span><span class="p">][</span><span class="n">t</span><span class="p">]:</span>
+                    <span class="n">state</span><span class="p">[</span><span class="n">q</span><span class="p">][</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="s1">&#39;line_id&#39;</span><span class="p">])</span>
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Dropped_on_unblock&#39;</span>
 </pre></div>
 
 </div>
@@ -12475,7 +12546,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">generate_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12492,7 +12563,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">drop_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12510,7 +12581,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">occupy_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12542,6 +12613,7 @@ div#notebook {
                 <span class="p">}</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">state</span><span class="p">[</span><span class="s1">&#39;connections_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;queue_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">cl_id</span><span class="p">,</span><span class="s1">&#39;exit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span> 
+            <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">cl_id</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Connected&#39;</span>
     <span class="k">return</span>
 </pre></div>
 
@@ -12552,7 +12624,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">release_operators</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
@@ -12568,6 +12640,7 @@ div#notebook {
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_operators&#39;</span><span class="p">][</span><span class="n">system</span><span class="p">[</span><span class="s1">&#39;operators_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;operator_id&#39;</span><span class="p">],</span><span class="s1">&#39;type&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;operator_id&#39;</span><span class="p">])</span>
             <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span><span class="s1">&#39;line_id&#39;</span><span class="p">])</span>
         <span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">state</span><span class="p">[</span><span class="s1">&#39;free_lines&#39;</span><span class="p">])</span>
+        <span class="n">state</span><span class="p">[</span><span class="s1">&#39;clients_ds&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ended_connections</span><span class="p">[</span><span class="s1">&#39;client_id&#39;</span><span class="p">],</span> <span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Disconnected_success&#39;</span>
     <span class="k">return</span> <span class="n">ended_connections</span>
 </pre></div>
 
@@ -12578,14 +12651,14 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">step</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>        
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Один временной шаг системы</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">generate_clients</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">generate_clients</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span><span class="n">ффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффффф</span>
     <span class="n">add_clients_to_queue</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
     <span class="n">block_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
     <span class="n">unblock_clients_in_queue</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
@@ -12607,7 +12680,20 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div>
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">numba</span> <span class="k">import</span> <span class="n">jit</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">):</span>
@@ -12643,7 +12729,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[28]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">system</span> <span class="o">=</span>  <span class="p">{</span><span class="s1">&#39;time_start&#39;</span><span class="p">:</span> <span class="n">get_datetime</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
@@ -12656,7 +12742,8 @@ div#notebook {
             <span class="s1">&#39;client_types&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;regular&#39;</span><span class="p">,</span> <span class="s1">&#39;silver&#39;</span><span class="p">,</span> <span class="s1">&#39;gold&#39;</span><span class="p">],</span>  <span class="c1"># типы клиентов. затем добавятся silver и gold</span>
             <span class="s1">&#39;operators_ds&#39;</span><span class="p">:</span> <span class="n">operators_ds</span><span class="p">,</span>
             <span class="s1">&#39;operators_work_duration&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
-            <span class="s1">&#39;n_lines_vip&#39;</span><span class="p">:</span> <span class="mi">5</span>
+            <span class="s1">&#39;n_lines_vip&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="s1">&#39;very_long_waiting&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">minutes</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
          <span class="p">}</span>
 </pre></div>
 
@@ -12667,7 +12754,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span><span class="p">,</span> <span class="n">state_final</span> <span class="o">=</span> <span class="n">run_simulation</span><span class="p">(</span><span class="n">system</span><span class="p">)</span>
@@ -12691,16 +12778,27 @@ div#notebook {
 
  
  
-<div id="cc8fef07-eb3c-41cd-a4ba-28f9031a335e"></div>
+<div id="981fa25c-c09b-462f-918a-c09a12f408b9"></div>
 <div class="output_subarea output_widget_view ">
 <script type="text/javascript">
-var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
+var element = $('#981fa25c-c09b-462f-918a-c09a12f408b9');
 </script>
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "3e193397c3774869920b98bb2fe27ddb", "version_major": 2, "version_minor": 0}
+{"model_id": "32cdb9538fc940ada8f9864c3adba320", "version_major": 2, "version_minor": 0}
 </script>
 </div>
 
+</div>
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
 </div>
 
 </div>
@@ -12709,7 +12807,7 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">get_panel</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">state_final</span><span class="p">)</span>
@@ -12720,10 +12818,194 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[30]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>id_connection</th>
+      <th>id_operator</th>
+      <th>time_start_connection</th>
+      <th>time_to_service</th>
+      <th>connection_closed</th>
+      <th>id_client</th>
+      <th>id_line</th>
+      <th>type_client</th>
+      <th>time_start_call</th>
+      <th>time_end_call</th>
+      <th>...</th>
+      <th>operator_start_work_time</th>
+      <th>priority_queue</th>
+      <th>time_queue_from</th>
+      <th>blocked</th>
+      <th>queue_exit</th>
+      <th>type_block</th>
+      <th>time_from_block</th>
+      <th>block_duration</th>
+      <th>unblocked</th>
+      <th>hour</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.0</td>
+      <td>0</td>
+      <td>2018-01-01 07:00:04</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>0</td>
+      <td>0</td>
+      <td>regular</td>
+      <td>2018-01-01 07:00:04</td>
+      <td>2018-01-01 07:10:05</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:00:04</td>
+      <td>False</td>
+      <td>True</td>
+      <td>NaN</td>
+      <td>NaT</td>
+      <td>NaT</td>
+      <td>NaN</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1.0</td>
+      <td>2</td>
+      <td>2018-01-01 07:00:26</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>1</td>
+      <td>1</td>
+      <td>silver</td>
+      <td>2018-01-01 07:00:15</td>
+      <td>2018-01-01 07:10:27</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>2</td>
+      <td>2018-01-01 07:00:15</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:00:15</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2.0</td>
+      <td>0</td>
+      <td>2018-01-01 07:10:06</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>4</td>
+      <td>3</td>
+      <td>regular</td>
+      <td>2018-01-01 07:01:59</td>
+      <td>2018-01-01 07:20:07</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:01:59</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:02:00</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>3.0</td>
+      <td>2</td>
+      <td>2018-01-01 07:10:28</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>3</td>
+      <td>2</td>
+      <td>silver</td>
+      <td>2018-01-01 07:01:48</td>
+      <td>2018-01-01 07:20:29</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>2</td>
+      <td>2018-01-01 07:01:48</td>
+      <td>False</td>
+      <td>True</td>
+      <td>silver</td>
+      <td>2018-01-01 07:01:48</td>
+      <td>00:00:10</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>4.0</td>
+      <td>0</td>
+      <td>2018-01-01 07:20:08</td>
+      <td>00:10:00</td>
+      <td>True</td>
+      <td>12</td>
+      <td>7</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:35</td>
+      <td>2018-01-01 07:30:09</td>
+      <td>...</td>
+      <td>2018-01-01 07:00:00</td>
+      <td>3</td>
+      <td>2018-01-01 07:05:35</td>
+      <td>False</td>
+      <td>True</td>
+      <td>regular</td>
+      <td>2018-01-01 07:05:36</td>
+      <td>00:00:07</td>
+      <td>True</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 25 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[31]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">tt</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;hour&#39;</span><span class="p">],</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;type_client&#39;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;client_missed&#39;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;mean&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
@@ -12737,10 +13019,170 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+AAAAAElFTkSuQmCC
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[32]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">line_loads_ds</span> <span class="o">=</span> <span class="n">get_line_loads</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">time_to</span><span class="o">=</span><span class="n">get_datetime</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
@@ -12750,10 +13192,208 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>C:\Users\egord\Anaconda3\lib\site-packages\ipykernel_launcher.py:8: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ds</span><span class="p">[(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type_client&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;silver&#39;</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">!=</span><span class="s1">&#39;Dropped_on_unblock&#39;</span><span class="p">)][[</span>
+    <span class="s1">&#39;time_start_connection&#39;</span><span class="p">,</span><span class="s1">&#39;id_client&#39;</span><span class="p">,</span><span class="s1">&#39;type_client&#39;</span><span class="p">,</span><span class="s1">&#39;time_start_call&#39;</span><span class="p">,</span><span class="s1">&#39;time_end_call&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;client_max_waiting_time&#39;</span><span class="p">,</span> <span class="s1">&#39;time_from_block&#39;</span><span class="p">,</span><span class="s1">&#39;block_duration&#39;</span>
+<span class="p">]]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt output_prompt">Out[33]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>time_start_connection</th>
+      <th>id_client</th>
+      <th>type_client</th>
+      <th>time_start_call</th>
+      <th>time_end_call</th>
+      <th>status</th>
+      <th>client_max_waiting_time</th>
+      <th>time_from_block</th>
+      <th>block_duration</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2018-01-01 07:00:26</td>
+      <td>1</td>
+      <td>silver</td>
+      <td>2018-01-01 07:00:15</td>
+      <td>2018-01-01 07:10:27</td>
+      <td>Disconnected_success</td>
+      <td>300</td>
+      <td>2018-01-01 07:00:15</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2018-01-01 07:10:28</td>
+      <td>3</td>
+      <td>silver</td>
+      <td>2018-01-01 07:01:48</td>
+      <td>2018-01-01 07:20:29</td>
+      <td>Disconnected_success</td>
+      <td>300</td>
+      <td>2018-01-01 07:01:48</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2018-01-01 07:20:30</td>
+      <td>6</td>
+      <td>silver</td>
+      <td>2018-01-01 07:02:50</td>
+      <td>2018-01-01 07:30:31</td>
+      <td>Disconnected_success</td>
+      <td>300</td>
+      <td>2018-01-01 07:02:50</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2018-01-01 07:30:32</td>
+      <td>7</td>
+      <td>silver</td>
+      <td>2018-01-01 07:04:08</td>
+      <td>2018-01-01 07:40:33</td>
+      <td>Disconnected_success</td>
+      <td>300</td>
+      <td>2018-01-01 07:04:08</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2018-01-01 07:40:34</td>
+      <td>31</td>
+      <td>silver</td>
+      <td>2018-01-01 07:11:13</td>
+      <td>2018-01-01 07:50:35</td>
+      <td>Disconnected_success</td>
+      <td>300</td>
+      <td>2018-01-01 07:11:13</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2018-01-01 07:50:36</td>
+      <td>74</td>
+      <td>silver</td>
+      <td>2018-01-01 07:20:57</td>
+      <td>None</td>
+      <td>Connected</td>
+      <td>300</td>
+      <td>2018-01-01 07:20:57</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>102</th>
+      <td>NaT</td>
+      <td>101</td>
+      <td>silver</td>
+      <td>2018-01-01 07:30:31</td>
+      <td>None</td>
+      <td>Unblocked</td>
+      <td>300</td>
+      <td>2018-01-01 07:30:31</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>130</th>
+      <td>NaT</td>
+      <td>130</td>
+      <td>silver</td>
+      <td>2018-01-01 07:41:18</td>
+      <td>None</td>
+      <td>Unblocked</td>
+      <td>300</td>
+      <td>2018-01-01 07:41:18</td>
+      <td>00:00:10</td>
+    </tr>
+    <tr>
+      <th>163</th>
+      <td>NaT</td>
+      <td>163</td>
+      <td>silver</td>
+      <td>2018-01-01 07:50:44</td>
+      <td>None</td>
+      <td>Unblocked</td>
+      <td>300</td>
+      <td>2018-01-01 07:50:44</td>
+      <td>00:00:10</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="p">(</span><span class="n">line_loads_ds</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
@@ -12764,10 +13404,303 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="s1">&#39;type_operator&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="s1">&#39;type_client&#39;</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="s1">&#39;id_connection&#39;</span><span class="p">,</span> <span class="n">aggfunc</span><span class="o">=</span><span class="s1">&#39;count&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
@@ -12779,21 +13712,186 @@ var element = $('#cc8fef07-eb3c-41cd-a4ba-28f9031a335e');
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+
+
+<div class="output_png output_subarea ">
+<img src="data:image/png;base64,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
+"
+>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="&#1063;&#1090;&#1086;-&#1077;&#1097;&#1105;-&#1085;&#1072;&#1076;&#1086;-&#1076;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;">&#1063;&#1090;&#1086; &#1077;&#1097;&#1105; &#1085;&#1072;&#1076;&#1086; &#1076;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;<a class="anchor-link" href="#&#1063;&#1090;&#1086;-&#1077;&#1097;&#1105;-&#1085;&#1072;&#1076;&#1086;-&#1076;&#1086;&#1073;&#1072;&#1074;&#1080;&#1090;&#1100;">&#182;</a></h1>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Оценка времени ожидания клиента</p>
-
 </div>
 </div>
 </div>
